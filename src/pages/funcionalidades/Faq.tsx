@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 
-=======
 import React, { useState } from 'react';
 
 interface FAQItem {
@@ -90,4 +88,4 @@ const Faq: React.FC = () => {
 };
 
 export default Faq;
->>>>>>> bf9dca181d925f8056b1d53c7b52c34e52ce606e
+
