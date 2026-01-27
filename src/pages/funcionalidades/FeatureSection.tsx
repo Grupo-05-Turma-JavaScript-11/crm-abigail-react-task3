@@ -5,7 +5,7 @@ const medicalFeatures = [
   {
     title: 'Prontuário Eletrônico',
     description: 'Histórico completo do paciente com segurança de dados e acesso rápido a exames e prescrições.',
-    icon: <span><Stethoscope></Stethoscope></span> // Substitua pelo componente de ícone real
+    icon: <span><Stethoscope></Stethoscope></span> 
   },
   {
     title: 'Agenda Inteligente',
