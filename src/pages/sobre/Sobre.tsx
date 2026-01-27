@@ -6,7 +6,7 @@ import { team } from "../../constants/Team";
 const Sobre: React.FC = () => {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#012340] via-[#025959] to-[#027333] text-white py-16">
-      <section className="container mx-auto px-6 lg:px-12">
+      <section className="w-full px-6 lg:px-12">
         <div className="grid gap-10 lg:grid-cols-2 items-center">
           <div className="space-y-6">
             <span className="inline-flex items-center gap-3 bg-[#45C4B0]/10 text-[#45C4B0] rounded-full px-3 py-1 text-[1.5rem] text-justify font-medium">
