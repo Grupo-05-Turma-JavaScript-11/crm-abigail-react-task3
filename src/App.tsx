@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import Faq from "./pages/funcionalidades/Faq"
+import { BrowserRouter, Routes,  } from "react-router-dom"
+
 
 
 
@@ -10,7 +10,7 @@ export default function App() {
 
       <Routes>
        
-        <Route path="/faq" element={<Faq />} />
+       
       </Routes>
 
      
