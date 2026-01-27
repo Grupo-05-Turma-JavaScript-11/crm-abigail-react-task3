@@ -4,22 +4,18 @@ import Navbar from './components/navbar/Navbar';
 import Sobre from './pages/sobre/Sobre';
 import Feature from './pages/funcionalidades/Feature';
 import Home from './pages/home/Home';
-
-
-
+import Footer from './components/footer/Footer';
 
 export default function App() {
   return (
     <BrowserRouter>
-    <Navbar />
-      <Routes>
-
-        <Route path="/" element={<Home/>} />
-        <Route path="/sobre" element={<Sobre />} />
-        <Route path="/funcionalidades" element={<Feature />} />
-
-      </Routes>
-
+      <Navbar />
+        <Routes>
+          <Route path="/" element={<Home/>} />
+          <Route path="/sobre" element={<Sobre />} />
+          <Route path="/funcionalidades" element={<Feature />} />
+        </Routes>
+      <Footer />
     </BrowserRouter>
   )
 

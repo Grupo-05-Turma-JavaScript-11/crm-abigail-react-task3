@@ -23,7 +23,7 @@ const Sobre: React.FC = () => {
 
             <div className="flex flex-wrap gap-3">
               <a
-                href="/contato"
+                href="#"
                 className="inline-flex items-center gap-2 bg-[#45C4B0] text-[#012340] font-semibold px-5 py-3 rounded-lg shadow-md hover:brightness-95 transition"
                 aria-label="Fale conosco - CRM Abgail"
               >
@@ -384,7 +384,7 @@ const Sobre: React.FC = () => {
 
           <div className="flex gap-3">
             <a
-              href="/contato"
+              href="#"
               className="inline-flex items-center gap-2 bg-[#45C4B0] text-[#012340] px-5 py-3 rounded-lg font-semibold hover:brightness-95 transition"
             >
               Agendar conversa

@@ -33,7 +33,7 @@ function Home() {
                         
                         <div className="relative animate-[float_4s_ease-in-out_infinite]">
                             <img
-                                src="https://ik.imagekit.io/isa237/AbgailCRM?tr=f-png"
+                                src="https://ik.imagekit.io/isa237/Abgail-Crm?tr=f-png"
                                 alt="Interface do Software Abgail"
                                 className='w-full max-w-lg z-10 drop-shadow-[0_35px_35px_rgba(0,0,0,0.4)] transform md:rotate-2 hover:rotate-0 transition-all duration-700 rounded-xl'
                             />

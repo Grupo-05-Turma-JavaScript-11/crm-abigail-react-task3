@@ -16,20 +16,25 @@ function Navbar() {
                 </div>
 
                 <div className='flex items-center gap-6 text-[#012340]'>
-                    <div className='relative font-bold text-sm group transition-colors hover:text-[#45C4B0] cursor-pointer'>
-                        HOME
-                        <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#45C4B0] transition-all duration-300 group-hover:w-full"></span>
-                    </div>
-
+                    <Link to="/">
+                        <div className='relative font-bold text-sm group transition-colors hover:text-[#45C4B0] cursor-pointer'>
+                            HOME
+                            <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#45C4B0] transition-all duration-300 group-hover:w-full"></span>
+                        </div>
+                    </Link>
+                    <Link to="/sobre">
                     <div className='relative font-bold text-sm group transition-colors hover:text-[#45C4B0] cursor-pointer'>
                         SOBRE NÓS
                         <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#45C4B0] transition-all duration-300 group-hover:w-full"></span>
                     </div>
+                    </Link>
 
+                    <Link to="/funcionalidades">
                     <div className='relative font-bold text-sm group transition-colors hover:text-[#45C4B0] cursor-pointer'>
                         FUNCIONALIDADES
                         <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#45C4B0] transition-all duration-300 group-hover:w-full"></span>
                     </div>
+                    </Link>
 
                     <div className='font-bold text-sm hover:text-[#45C4B0] transition-colors px-4 cursor-pointer'>
                         LOGIN
@@ -39,6 +44,7 @@ function Navbar() {
                         <span className="relative z-10">CADASTRO</span>
                         <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-40 group-hover:animate-[shine_1s_ease-in-out]" />
                     </div>
+
                 </div>
             </div>
 
