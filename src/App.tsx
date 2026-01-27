@@ -1,5 +1,6 @@
 
-import Faq from "./pages/funcionalidades/Faq"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import FeaturesSection from "./pages/funcionalidades/FeatureSection"
 
 
 
@@ -13,7 +14,7 @@ export default function App() {
         
 
       
-        <Route path="/faq" element={<Faq />} />
+        <Route path="/" element={<FeaturesSection />} />
       </Routes>
 
      
