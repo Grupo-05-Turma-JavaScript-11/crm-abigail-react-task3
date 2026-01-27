@@ -1,97 +1,19 @@
 import React from "react";
 import aboutHeroImg from "../../assets/illustrations/about-hero.png";
-import adryanImg from "../../assets/team/img-adryan.png";
-import andersonImg from "../../assets/team/img-anderson.png";
-import brunaImg from "../../assets/team/img-bruna.png";
-import gabrielaImg from "../../assets/team/img-gabriela.png";
-import isadoraImg from "../../assets/team/img-isadora.png";
-import licoliImg from "../../assets/team/img-licoli.png";
-
-const team = [
-  {
-    name: "Adryan Lopes",
-    role: "Backend Engineer",
-    bio: "Especialista em arquitetura de APIs e integridade dos dados, garante segurança e performance no coração do CRM Abgail.",
-    img: adryanImg,
-  },
-  {
-    name: "Anderson da Silva",
-    role: "Frontend Engineer",
-    bio: "Constrói interfaces ricas, acessíveis e responsivas com foco em usabilidade clínica e velocidade.",
-    img: andersonImg,
-  },
-  {
-    name: "Bruna Barbieri",
-    role: "IA & Dados",
-    bio: "Especialista em modelos inteligentes aplicados a prontuários e triagem, implementa recursos que poupam tempo do médico.",
-    img: brunaImg,
-  },
-  {
-    name: "Gabriela Patrocínio",
-    role: "Product & UX",
-    bio: "Designer de produto orientada a fluxos médicos reais, transformando transforma processos clínicos em experiências claras e eficientes.",
-    img: gabrielaImg,
-  },
-  {
-    name: "Isadora Lopes",
-    role: "QA & Clinical Validation",
-    bio: "Foca na qualidade clínica do produto para que a informação exibida seja confiável e auditável.",
-    img: isadoraImg,
-  },
-  {
-    name: "Licóli Santos",
-    role: "DevOps & Infra",
-    bio: "Responsável por disponibilidade, escalabilidade e automação, garantindo que o sistema esteja sempre pronto para o paciente.",
-    img: licoliImg,
-  },
-];
+import { Title } from "../../components/about/titleAbout/Title";
+import { team } from "../../constants/Team";
 
 const Sobre: React.FC = () => {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#012340] via-[#025959] to-[#027333] text-white py-16">
       <section className="container mx-auto px-6 lg:px-12">
-        {/* Hero */}
         <div className="grid gap-10 lg:grid-cols-2 items-center">
           <div className="space-y-6">
             <span className="inline-flex items-center gap-3 bg-[#45C4B0]/10 text-[#45C4B0] rounded-full px-3 py-1 text-[1.5rem] text-justify font-medium">
               Software médico • Eleve a gestão da sua clínica
             </span>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight text-justify">
-              Eleve a gestão da sua clínica{" "}
-              <span className="relative inline-block">
-                <span className="text-[#9AEBA3]">
-                  com o melhor software médico!
-                </span>
-
-                {/* SVG inline: linha tracejada em movimento contínuo */}
-                <svg
-                  className="absolute left-0 right-0 -bottom-3 w-full h-3 pointer-events-none"
-                  viewBox="0 0 100 6"
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                  focusable="false"
-                >
-                  <path
-                    d="M0 3 H100"
-                    fill="none"
-                    stroke="#45C4B0"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeDasharray="8 6"
-                  >
-                    {/* anima a posição do tracejado: ajusta 'dur' para velocidade */}
-                    <animate
-                      attributeName="stroke-dashoffset"
-                      from="0"
-                      to="-8"
-                      dur="3s"
-                      repeatCount="indefinite"
-                    />
-                  </path>
-                </svg>
-              </span>
-            </h1>
+            <Title />
 
             <p className="text-[#9AEBA3]/90 max-w-full text-justify">
               Do prontuário eletrônico com IA ao relacionamento humanizado com o
@@ -194,7 +116,6 @@ const Sobre: React.FC = () => {
           </div>
         </div>
 
-        {/* Como funciona */}
         <section className="mt-12 grid gap-8 lg:grid-cols-3">
           <div className="col-span-2 bg-white/3 rounded-2xl p-8 text-justify">
             <h2 className="text-[1.4rem] font-bold text-white">
