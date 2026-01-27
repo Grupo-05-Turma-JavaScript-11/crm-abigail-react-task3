@@ -4,10 +4,10 @@ export function Title() {
   return (
     <> 
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight text-justify">
-              Eleve a gestão da sua clínica{" "}
+               Menos ruído. Mais organização. {" "}
               <span className="relative inline-block">
-                <span className="text-[#9AEBA3]">
-                  com o melhor software médico!
+                <span className="text-[#9AEBA3] text-[2rem] ">
+                Gestão clínica clara, segura e eficiente em um único software.
                 </span>
 
                 <svg

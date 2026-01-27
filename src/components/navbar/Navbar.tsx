@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Navbar() {
     return (
         <div className='w-full flex justify-center py-4 bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm'> 
