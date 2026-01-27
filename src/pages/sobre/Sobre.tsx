@@ -49,7 +49,7 @@ const team = [
 const Sobre: React.FC = () => {
     return (
         <main className="min-h-screen bg-gradient-to-b from-[#012340] via-[#025959] to-[#027333] text-white py-16">
-            <section className="container mx-auto px-6 lg:px-12">
+            <section className="w-full px-6 lg:px-20">
                 {/* Hero */}
                 <div className="grid gap-10 lg:grid-cols-2 items-center">
                     <div className="space-y-6">
@@ -58,9 +58,9 @@ const Sobre: React.FC = () => {
                         </span>
 
                         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight text-justify">
-                            Eleve a gestão da sua clínica{" "}
+                            Menos ruído. Mais organização.{" "}
                             <span className="relative inline-block">
-                                <span className="text-[#9AEBA3]">com o melhor software médico!</span>
+                                <span className="text-[#9AEBA3] text-2xl">Gestão clínica clara, segura e eficiente em um único software.</span>
 
                                 {/* SVG inline: linha tracejada em movimento contínuo */}
                                 <svg
