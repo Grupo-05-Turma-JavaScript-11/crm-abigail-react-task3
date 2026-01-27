@@ -26,8 +26,8 @@ export const team = [
     },
     {
       name: "Gabriela Patrocínio",
-      role: "Product & UX",
-      bio: "Designer de produto orientada a fluxos médicos reais, transformando transforma processos clínicos em experiências claras e eficientes.",
+      role: "Product & UX/UI",
+      bio: "Designer de produto orientada a fluxos médicos reais, transformando processos clínicos em experiências claras e eficientes.",
       img: gabrielaImg,
     },
     {

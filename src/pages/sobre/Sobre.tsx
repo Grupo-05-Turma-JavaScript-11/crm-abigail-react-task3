@@ -288,7 +288,7 @@ const Sobre: React.FC = () => {
                 Quer ver em ação? Agende uma demonstração personalizada.
               </p>
               <a
-                href="/demo"
+                href="#"
                 className="mt-3 inline-block w-full text-center bg-[#45C4B0] text-[#012340] px-3 py-2 rounded-lg font-semibold hover:brightness-95 transition"
                 aria-label="Solicitar demonstração"
               >
@@ -298,7 +298,7 @@ const Sobre: React.FC = () => {
           </aside>
         </section>
 
-        {/* Missão / Visão / Valores */}
+
         <section
           id="valores"
           className="mt-16 bg-white/5 rounded-2xl p-8 lg:p-12"
@@ -341,7 +341,6 @@ const Sobre: React.FC = () => {
           </div>
         </section>
 
-        {/* Time */}
         <section className="mt-12">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-white">Nosso time</h2>
@@ -372,7 +371,6 @@ const Sobre: React.FC = () => {
           </div>
         </section>
 
-        {/* Footer CTA */}
         <section className="mt-12 bg-[#012340]/60 rounded-2xl p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h3 className="text-xl font-bold text-white">
@@ -392,7 +390,7 @@ const Sobre: React.FC = () => {
               Agendar conversa
             </a>
             <a
-              href="/roadmap"
+              href="#"
               className="inline-flex items-center gap-2 border border-white/20 px-5 py-3 rounded-lg hover:bg-white/5 transition"
             >
               Ver roadmap
