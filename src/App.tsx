@@ -1,7 +1,5 @@
 
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import Sobre from "./pages/sobre/Sobre"
-
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 
 export default function App() {
@@ -9,16 +7,12 @@ export default function App() {
     <BrowserRouter>
 
     
+        <Routes>
 
-      <Routes>
-       
+        <Route />
 
-      <Route path="/" element={<Sobre/>}/>
-       
-       
-      </Routes>
+        </Routes>
 
-     
     </BrowserRouter>
   )
 
