@@ -1,6 +1,7 @@
 
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import FeaturesSection from "./pages/funcionalidades/FeatureSection"
+
+
 
 
 export default function App() {
@@ -10,7 +11,7 @@ export default function App() {
 
       <Routes>
       
-        <Route path="/" element={<FeaturesSection />} />
+        <Route/>
       </Routes>
 
      
