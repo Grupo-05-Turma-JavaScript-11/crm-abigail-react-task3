@@ -1,11 +1,26 @@
-import Sobre from "./pages/sobre/Sobre";
 
-function App() {
-    return (
-        <div className="min-h-screen">
-            <Sobre />
-        </div>
-    );
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Navbar from './components/navbar/Navbar';
+import Sobre from './pages/sobre/Sobre';
+import Feature from './pages/funcionalidades/Feature';
+import Home from './pages/home/Home';
+
+
+
+
+export default function App() {
+  return (
+    <BrowserRouter>
+    <Navbar />
+      <Routes>
+
+        <Route path="/" element={<Home/>} />
+        <Route path="/sobre" element={<Sobre />} />
+        <Route path="/funcionalidades" element={<Feature />} />
+
+      </Routes>
+
+    </BrowserRouter>
+  )
+
 }
-
-export default App;
