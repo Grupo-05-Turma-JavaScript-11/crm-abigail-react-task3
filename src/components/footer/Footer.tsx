@@ -1,8 +1,9 @@
 import { GithubLogoIcon } from "@phosphor-icons/react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 
 function Footer() {
+    const location = useLocation();
     // Função para garantir que a página sempre comece do topo ao clicar
     const scrollToTop = () => {
         window.scrollTo({
@@ -10,6 +11,11 @@ function Footer() {
             behavior: 'smooth'
         });
     };
+
+    // Lógica para esconder a Navbar se estiver em '/login' ou '/cadastro'
+    if (location.pathname === '/login' || location.pathname === '/cadastro') {
+        return null; // Retorna nada, logo, a Navbar não aparece nessas telas
+    }
 
     return (
         <footer className="bg-[#012340] text-white pt-16 pb-8">
@@ -90,7 +96,7 @@ function Footer() {
                     <div className="flex items-center gap-4">
                         <span className="text-xs text-gray-500 font-medium italic">Acesse nosso repositório:</span>
                         <a 
-                            href="https://github.com/Grupo-05-Turma-JavaScript-11/crm-abigail-react" 
+                            href="https://github.com/Grupo-05-Turma-JavaScript-11/crm-abigail-react-task3" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="text-white hover:text-[#45C4B0] transition-all hover:scale-110"
