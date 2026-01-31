@@ -125,6 +125,11 @@ function Login() {
                                 Cadastre-se
                             </Link>
                         </p>
+                        <p className="text-center text-white/80 text-sm">
+                            <Link to="/" className="text-[#9AEBA3] font-bold hover:text-[#45C4B0] underline decoration-[#45C4B0] transition-colors">
+                               Voltar para a página inicial
+                            </Link>
+                        </p>
                     </form>
                 </div>
             </div>
