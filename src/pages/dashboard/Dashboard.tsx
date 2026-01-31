@@ -1,771 +1,858 @@
-import React, { useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
 
-/**
- * DASHBOARD (APENAS DASHBOARD)
- * - Sidebar colapsável com animação (desliza) + conteúdo "empurrado"
- * - KPIs
- * - Tabela de atendimentos do dia (agenda) + ações (mock)
- * - Busca + filtro por status
- * - Notificações + limpar
- * - Paleta: #012340 #025959 #027333 #45C4B0 #9AEBA3
- *
- * Requisitos:
- * - React + Tailwind
- * - Nada de services/hooks externos/context/api aqui
- */
-
-// =======================
-// Tipos
-// =======================
-type Status =
-    | "AGENDADO"
-    | "CONFIRMADO"
-    | "EM_ATENDIMENTO"
-    | "FINALIZADO"
-    | "CANCELADO"
-    | "FALTA";
-
-type Tipo = "Consulta" | "Retorno" | "Exame";
-
-type Consulta = {
-    id: string;
-    horario: string; // "09:30"
-    paciente: string;
-    profissional: string;
-    tipo: Tipo;
-    status: Status;
-};
-
-type Notificacao = {
-    id: string;
-    titulo: string;
-    detalhe?: string;
-    prioridade: "BAIXA" | "MEDIA" | "ALTA";
-};
-
-type MenuItem = {
-    id: string;
+type NavItem = {
+    key: string;
     label: string;
+    to: string;
     icon: React.ReactNode;
 };
 
-// =======================
-// Mock (troque por API depois)
-// =======================
-const MOCK_CONSULTAS: Consulta[] = [
-    { id: "1", horario: "08:00", paciente: "Maria Silva", profissional: "Dra. Paula", tipo: "Consulta", status: "CONFIRMADO" },
-    { id: "2", horario: "08:30", paciente: "João Santos", profissional: "Dr. Renato", tipo: "Retorno", status: "AGENDADO" },
-    { id: "3", horario: "09:00", paciente: "Aline Rocha", profissional: "Dra. Paula", tipo: "Consulta", status: "EM_ATENDIMENTO" },
-    { id: "4", horario: "09:30", paciente: "Carlos Lima", profissional: "Dr. Renato", tipo: "Exame", status: "AGENDADO" },
-    { id: "5", horario: "10:00", paciente: "Fernanda Alves", profissional: "Dra. Paula", tipo: "Consulta", status: "CANCELADO" },
-    { id: "6", horario: "10:30", paciente: "Bruno Oliveira", profissional: "Dr. Renato", tipo: "Retorno", status: "FALTA" },
-    { id: "7", horario: "11:00", paciente: "Patrícia Costa", profissional: "Dra. Paula", tipo: "Consulta", status: "FINALIZADO" },
-];
-
-const MOCK_NOTIFICACOES: Notificacao[] = [
-    { id: "n1", titulo: "Paciente aguardando", detalhe: "Aline Rocha está em espera há 12 minutos.", prioridade: "ALTA" },
-    { id: "n2", titulo: "Consulta atrasada", detalhe: "Agendamento das 09:30 ainda não iniciou.", prioridade: "MEDIA" },
-    { id: "n3", titulo: "Pendência de prontuário", detalhe: "Há 2 atendimentos sem evolução registrada.", prioridade: "BAIXA" },
-];
-
-// =======================
-// Paleta (constantes)
-// =======================
-const COLORS = {
-    azulEscuro: "#012340",
-    verdePetroleo: "#025959",
-    verdeEscuro: "#027333",
-    turquesa: "#45C4B0",
-    verdeClaro: "#9AEBA3",
+type StatCard = {
+    key: string;
+    title: string;
+    value: string;
+    note?: string;
+    accent: string;
+    icon: React.ReactNode;
 };
 
-// =======================
-// Ícones inline (simples e leves)
-// =======================
-function IconGrid() {
-    return (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path
-                d="M4 4h7v7H4V4Zm9 0h7v7h-7V4ZM4 13h7v7H4v-7Zm9 0h7v7h-7v-7Z"
-                fill="currentColor"
-                opacity="0.9"
-            />
-        </svg>
-    );
-}
-function IconCalendar() {
-    return (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path
-                d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7Zm12 8H5v10h14V10Z"
-                fill="currentColor"
-                opacity="0.9"
-            />
-        </svg>
-    );
-}
-function IconUser() {
-    return (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path
-                d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"
-                fill="currentColor"
-                opacity="0.9"
-            />
-        </svg>
-    );
-}
-function IconClipboard() {
-    return (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path
-                d="M9 2h6a2 2 0 0 1 2 2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2-2Zm0 4h6V4H9v2Z"
-                fill="currentColor"
-                opacity="0.9"
-            />
-        </svg>
-    );
-}
-function IconDoc() {
-    return (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path
-                d="M6 2h9l5 5v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm8 1v5h5"
-                fill="currentColor"
-                opacity="0.9"
-            />
-        </svg>
-    );
-}
-function IconChart() {
-    return (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path
-                d="M4 19h16v2H2V3h2v16Zm4-8h2v8H8v-8Zm5-6h2v14h-2V5Zm5 4h2v10h-2V9Z"
-                fill="currentColor"
-                opacity="0.9"
-            />
-        </svg>
-    );
-}
-function IconCog() {
-    return (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path
-                d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm9 4-2.1.7a7.9 7.9 0 0 1-.6 1.5l1.3 1.8-1.4 1.4-1.8-1.3a7.9 7.9 0 0 1-1.5.6L13 21h-2l-.7-2.1a7.9 7.9 0 0 1-1.5-.6l-1.8 1.3-1.4-1.4 1.3-1.8a7.9 7.9 0 0 1-.6-1.5L3 12l2.1-.7a7.9 7.9 0 0 1 .6-1.5L4.4 8l1.4-1.4 1.8 1.3a7.9 7.9 0 0 1 1.5-.6L11 3h2l.7 2.1a7.9 7.9 0 0 1 1.5.6l1.8-1.3L20.4 8l-1.3 1.8a7.9 7.9 0 0 1 .6 1.5L21 12Z"
-                fill="currentColor"
-                opacity="0.9"
-            />
-        </svg>
-    );
-}
-function IconChevron({ open }: { open: boolean }) {
-    // quando aberto, aponta para esquerda (recolher). quando fechado, aponta para direita (abrir).
-    return (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            {open ? (
-                <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-            ) : (
-                <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-            )}
-        </svg>
-    );
-}
+type AgendaItem = {
+    id: string;
+    time: string;
+    patient: string;
+    type: string;
+    status: "Confirmado" | "Em Atendimento" | "Agendado" | "Cancelado";
+};
 
-// =======================
-// Helpers de UI
-// =======================
-function statusLabel(s: Status) {
-    switch (s) {
-        case "AGENDADO":
-            return "Agendado";
-        case "CONFIRMADO":
-            return "Confirmado";
-        case "EM_ATENDIMENTO":
-            return "Em atendimento";
-        case "FINALIZADO":
-            return "Finalizado";
-        case "CANCELADO":
-            return "Cancelado";
-        case "FALTA":
-            return "Falta";
-    }
-}
+type ActivityItem = {
+    id: string;
+    time: string;
+    title: string;
+    description: string;
+    tone: "info" | "success" | "warning";
+};
 
-function statusPillClass(s: Status) {
-    switch (s) {
-        case "CONFIRMADO":
-            return "bg-[rgba(154,235,163,0.35)] text-[rgba(1,35,64,0.95)]";
-        case "EM_ATENDIMENTO":
-            return "bg-[rgba(69,196,176,0.25)] text-[rgba(1,35,64,0.95)]";
-        case "FINALIZADO":
-            return "bg-[rgba(2,115,51,0.15)] text-[rgba(1,35,64,0.95)]";
-        case "CANCELADO":
-            return "bg-red-100 text-red-700";
-        case "FALTA":
-            return "bg-amber-100 text-amber-800";
-        case "AGENDADO":
-        default:
-            return "bg-black/5 text-black/70";
-    }
-}
-
-function prioridadeBadgeClass(p: Notificacao["prioridade"]) {
-    if (p === "ALTA") return "bg-red-100 text-red-700";
-    if (p === "MEDIA") return "bg-amber-100 text-amber-800";
-    return "bg-black/5 text-black/70";
-}
-
-function Card({ children }: { children: React.ReactNode }) {
-    return <div className="rounded-2xl bg-white border border-black/5 shadow-sm">{children}</div>;
-}
-
-function Button({
-    children,
-    variant = "primary",
-    disabled,
-    onClick,
-    title,
-}: {
+type IconBadgeProps = {
     children: React.ReactNode;
-    variant?: "primary" | "ghost";
-    disabled?: boolean;
-    onClick?: () => void;
+    className?: string;
     title?: string;
-}) {
-    const base =
-        "inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-medium transition select-none";
-    const styles =
-        variant === "primary"
-            ? "bg-[#012340] text-white hover:brightness-[1.05] disabled:opacity-60"
-            : "bg-white border border-black/10 hover:bg-[rgba(154,235,163,0.20)] disabled:opacity-60";
+};
+
+type NavRowProps = {
+    item: NavItem;
+    active: boolean;
+    onNavigate?: () => void;
+};
+
+const COLORS = {
+    base: "#012340",
+    mid: "#025959",
+    darkGreen: "#027333",
+    aqua: "#45C4B0",
+    lightGreen: "#9AEBA3",
+};
+
+function classNames(...classes: Array<string | false | null | undefined>) {
+    return classes.filter(Boolean).join(" ");
+}
+
+function IconBadge({ children, className, title }: IconBadgeProps) {
     return (
-        <button className={`${base} ${styles}`} onClick={onClick} disabled={disabled} title={title}>
+        <span
+            className={classNames("inline-flex items-center justify-center", className)}
+            aria-hidden={title ? undefined : true}
+            aria-label={title}
+            title={title}
+        >
             {children}
-        </button>
+        </span>
     );
 }
 
-function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+/**
+ * ✅ Explicação do “DA”:
+ * Isso é o fallback do Avatar: ele pega as iniciais do nome do usuário.
+ * Ex.: "Dra. Ana" → "DA".
+ * Vem daqui (Avatar) e aparece sempre que você renderiza <Avatar name="..." />
+ */
+function Avatar({ name }: { name: string }) {
+    const initials = useMemo(() => {
+        const parts = (name || "").trim().split(/\s+/).slice(0, 2);
+        return parts.map((p) => p?.[0]?.toUpperCase()).join("");
+    }, [name]);
+
     return (
-        <div>
-            <h3 className="font-semibold text-[rgba(1,35,64,0.95)]">{title}</h3>
-            {subtitle ? <p className="text-sm text-black/60 mt-1">{subtitle}</p> : null}
+        <div
+            className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold shadow-sm ring-2"
+            style={{ backgroundColor: COLORS.aqua, color: COLORS.base, borderColor: COLORS.lightGreen }}
+            aria-label={`Avatar de ${name}`}
+            title={name}
+        >
+            {initials || "U"}
         </div>
     );
 }
 
-function StatCard({
-    label,
-    value,
-    accent,
-}: {
-    label: string;
-    value: string | number;
-    accent: "azul" | "petroleo" | "verde" | "turquesa";
-}) {
-    const gradient =
-        accent === "azul"
-            ? `from-[${COLORS.azulEscuro}] to-[${COLORS.verdePetroleo}]`
-            : accent === "petroleo"
-                ? `from-[${COLORS.verdePetroleo}] to-[${COLORS.turquesa}]`
-                : accent === "verde"
-                    ? `from-[${COLORS.verdeEscuro}] to-[${COLORS.verdeClaro}]`
-                    : `from-[${COLORS.turquesa}] to-[${COLORS.verdeClaro}]`;
+function StatusBadge({ status }: { status: AgendaItem["status"] }) {
+    const cfg = useMemo(() => {
+        switch (status) {
+            case "Confirmado":
+                return { bg: COLORS.lightGreen, fg: COLORS.darkGreen };
+            case "Em Atendimento":
+                return { bg: COLORS.aqua, fg: COLORS.base };
+            case "Agendado":
+                return { bg: "#E5F6F3", fg: COLORS.mid };
+            case "Cancelado":
+            default:
+                return { bg: "#FEE2E2", fg: "#991B1B" };
+        }
+    }, [status]);
 
     return (
-        <Card>
-            <div className="p-4 relative overflow-hidden">
-                <div className={`absolute -right-10 -top-10 h-28 w-28 rounded-full blur-2xl opacity-60 bg-gradient-to-br ${gradient}`} />
-                <p className="text-xs font-medium text-black/60">{label}</p>
-                <p className="mt-2 text-2xl font-semibold tracking-tight">{value}</p>
-            </div>
-        </Card>
+        <span
+            className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold"
+            style={{ backgroundColor: cfg.bg, color: cfg.fg }}
+        >
+            {status}
+        </span>
     );
 }
 
-// =======================
-// Sidebar
-// =======================
-function Sidebar({
-    open,
-    activeId,
-    onToggle,
-    onSelect,
-}: {
-    open: boolean;
-    activeId: string;
-    onToggle: () => void;
-    onSelect: (id: string) => void;
-}) {
-    const MENU: MenuItem[] = [
-        { id: "dashboard", label: "Dashboard", icon: <IconGrid /> },
-        { id: "agenda", label: "Agenda", icon: <IconCalendar /> },
-        { id: "pacientes", label: "Pacientes", icon: <IconUser /> },
-        { id: "atendimentos", label: "Atendimentos", icon: <IconClipboard /> },
-        { id: "prontuarios", label: "Prontuários", icon: <IconDoc /> },
-        { id: "financeiro", label: "Financeiro", icon: <IconChart /> },
-        { id: "relatorios", label: "Relatórios", icon: <IconChart /> },
-        { id: "config", label: "Configurações", icon: <IconCog /> },
-    ];
-
-    const widthOpen = 260;  // aberto
-    const widthClosed = 64; // recolhido
-
+function NavRow({ item, active, onNavigate }: NavRowProps) {
     return (
-        <aside
-            className="fixed left-0 top-0 h-screen z-30 border-r border-black/5 bg-white shadow-sm"
+        <Link
+            to={item.to}
+            onClick={onNavigate}
+            className={classNames(
+                "group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition",
+                active ? "shadow-sm" : "hover:bg-slate-50"
+            )}
             style={{
-                width: open ? widthOpen : widthClosed,
-                transition: "width 260ms ease",
+                backgroundColor: active ? "rgba(69,196,176,0.14)" : undefined,
+                color: active ? COLORS.base : "rgba(1,35,64,0.85)",
             }}
         >
-            {/* Topo (marca + toggle) */}
-            <div className="h-16 flex items-center justify-between px-3 border-b border-black/5">
-                <div className="flex items-center gap-2 overflow-hidden">
-                    <div
-                        className="h-9 w-9 rounded-xl grid place-items-center"
-                        style={{
-                            background: `linear-gradient(135deg, ${COLORS.azulEscuro}, ${COLORS.turquesa})`,
-                            color: "white",
-                        }}
-                    >
-                        <IconGrid />
-                    </div>
-
-                    <div
-                        className="min-w-0"
-                        style={{
-                            opacity: open ? 1 : 0,
-                            transform: open ? "translateX(0)" : "translateX(-6px)",
-                            transition: "opacity 180ms ease, transform 180ms ease",
-                            pointerEvents: open ? "auto" : "none",
-                        }}
-                    >
-                        <p className="text-sm font-semibold text-[rgba(1,35,64,0.95)] leading-tight">
-                            Clinic CRM
-                        </p>
-                        <p className="text-xs text-black/50 -mt-0.5">Painel</p>
-                    </div>
-                </div>
-
-                {/* Toggle (setinha) */}
-                <button
-                    onClick={onToggle}
-                    className="h-9 w-9 rounded-xl border border-black/10 grid place-items-center hover:bg-black/[0.03] transition"
-                    title={open ? "Recolher menu" : "Abrir menu"}
-                    style={{ color: COLORS.azulEscuro }}
-                >
-                    <IconChevron open={open} />
-                </button>
-            </div>
-
-            {/* Menu */}
-            <nav className="py-3">
-                {MENU.map((item) => {
-                    const isActive = item.id === activeId;
-                    return (
-                        <button
-                            key={item.id}
-                            onClick={() => onSelect(item.id)}
-                            className={[
-                                "w-full flex items-center gap-3 px-3 py-2.5 transition rounded-xl mx-2",
-                                isActive ? "bg-[rgba(69,196,176,0.20)]" : "hover:bg-black/[0.03]",
-                            ].join(" ")}
-                            style={{
-                                color: isActive ? COLORS.azulEscuro : "rgba(0,0,0,0.70)",
-                            }}
-                            title={!open ? item.label : undefined}
-                        >
-                            <span className="h-9 w-9 rounded-xl grid place-items-center border border-black/5 bg-white">
-                                <span style={{ color: isActive ? COLORS.azulEscuro : "rgba(0,0,0,0.65)" }}>
-                                    {item.icon}
-                                </span>
-                            </span>
-
-                            <span
-                                className="text-sm font-medium whitespace-nowrap"
-                                style={{
-                                    opacity: open ? 1 : 0,
-                                    transform: open ? "translateX(0)" : "translateX(-8px)",
-                                    transition: "opacity 180ms ease, transform 180ms ease",
-                                    pointerEvents: open ? "auto" : "none",
-                                }}
-                            >
-                                {item.label}
-                            </span>
-                        </button>
-                    );
-                })}
-            </nav>
-
-            {/* Rodapé do sidebar */}
-            <div
-                className="absolute bottom-0 left-0 right-0 p-3 border-t border-black/5"
+            <span
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border"
                 style={{
-                    opacity: open ? 1 : 0,
-                    transform: open ? "translateY(0)" : "translateY(6px)",
-                    transition: "opacity 180ms ease, transform 180ms ease",
-                    pointerEvents: open ? "auto" : "none",
+                    borderColor: active ? "rgba(69,196,176,0.35)" : "rgba(1,35,64,0.12)",
+                    backgroundColor: active ? "rgba(69,196,176,0.18)" : "white",
+                    color: active ? COLORS.mid : "rgba(1,35,64,0.75)",
                 }}
+                aria-hidden="true"
             >
-                <div className="rounded-xl border border-black/5 p-3 bg-[rgba(154,235,163,0.16)]">
-                    <p className="text-xs text-black/60">
-                        Menu recolhível para manter a tela limpa e focada na rotina.
-                    </p>
-                </div>
-            </div>
-        </aside>
+                {item.icon}
+            </span>
+
+            <span className="min-w-0 flex-1 truncate">{item.label}</span>
+
+            <span>
+                <svg viewBox="0 0 24 24" className="h-4 w-4 opacity-60" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 18l6-6-6-6" />
+                </svg>
+            </span>
+        </Link>
     );
 }
 
-// =======================
-// Página Dashboard
-// =======================
 export default function Dashboard() {
-    // Sidebar
+    const { usuario, handleLogout } = useContext(AuthContext);
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    // ✅ Proteção simples: sem token, não entra
+    const isLoggedIn = usuario.token !== "";
+
+    // Sidebar off-canvas (começa fechada)
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
-    const [activeMenuId, setActiveMenuId] = useState<string>("dashboard");
 
-    // Dados
-    const [consultas, setConsultas] = useState<Consulta[]>(MOCK_CONSULTAS);
-    const [notificacoes, setNotificacoes] = useState<Notificacao[]>(MOCK_NOTIFICACOES);
+    // Ref para foco no sidebar ao abrir (a11y)
+    const sidebarRef = useRef<HTMLElement | null>(null);
 
-    // UI states
-    const [busca, setBusca] = useState<string>("");
-    const [filtroStatus, setFiltroStatus] = useState<Status | "TODOS">("TODOS");
+    // ✅ Fecha sidebar quando troca de rota
+    useEffect(() => {
+        setSidebarOpen(false);
+    }, [location.pathname]);
 
-    // Dimensões do sidebar (para empurrar conteúdo)
-    const SIDEBAR_W_OPEN = 260;
-    const SIDEBAR_W_CLOSED = 64;
+    // ✅ ESC fecha sidebar; e foca sidebar ao abrir
+    useEffect(() => {
+        function onKeyDown(e: KeyboardEvent) {
+            if (e.key === "Escape") setSidebarOpen(false);
+        }
+        window.addEventListener("keydown", onKeyDown);
 
-    // KPIs derivados
-    const kpis = useMemo(() => {
-        const consultasHoje = consultas.length;
-        const emAtendimento = consultas.filter((c) => c.status === "EM_ATENDIMENTO").length;
-        const finalizadas = consultas.filter((c) => c.status === "FINALIZADO").length;
-        const faltasCancelamentos = consultas.filter((c) => c.status === "FALTA" || c.status === "CANCELADO").length;
-        return { consultasHoje, emAtendimento, finalizadas, faltasCancelamentos };
-    }, [consultas]);
+        if (sidebarOpen) sidebarRef.current?.focus?.();
 
-    // Lista filtrada
-    const consultasFiltradas = useMemo(() => {
-        const q = busca.trim().toLowerCase();
-        return consultas.filter((c) => {
-            const passaStatus = filtroStatus === "TODOS" ? true : c.status === filtroStatus;
-            const passaBusca =
-                q.length === 0
-                    ? true
-                    : [c.paciente, c.profissional, c.horario, c.tipo, statusLabel(c.status)]
-                        .join(" ")
-                        .toLowerCase()
-                        .includes(q);
-            return passaStatus && passaBusca;
-        });
-    }, [consultas, busca, filtroStatus]);
+        return () => window.removeEventListener("keydown", onKeyDown);
+    }, [sidebarOpen]);
 
-    // Ações locais
-    function addNotice(n: Omit<Notificacao, "id">) {
-        const id =
-            typeof crypto !== "undefined" && "randomUUID" in crypto
-                ? crypto.randomUUID()
-                : String(Date.now());
-        setNotificacoes((prev) => [{ id, ...n }, ...prev]);
+    const handleToggleSidebar = () => setSidebarOpen((v) => !v);
+    const handleCloseSidebar = () => setSidebarOpen(false);
+
+    const onLogout = () => {
+        handleLogout();
+        navigate("/login", { replace: true });
+    };
+
+    // ✅ Bloqueia acesso
+    if (!isLoggedIn) {
+        return <Navigate to="/login" replace />;
     }
 
-    function iniciarAtendimento(id: string) {
-        setConsultas((prev) =>
-            prev.map((c) => (c.id === id ? { ...c, status: "EM_ATENDIMENTO" } : c))
-        );
-        addNotice({
-            titulo: "Atendimento iniciado",
-            detalhe: "O atendimento foi marcado como “Em atendimento”.",
-            prioridade: "BAIXA",
-        });
-    }
+    // Mostra o tipo como “cargo” (simples e direto)
+    const roleLabel = useMemo(() => {
+        if (usuario.tipo === "admin") return "Administrador(a)";
+        if (usuario.tipo === "medico") return "Médico(a)";
+        if (usuario.tipo === "assistente") return "Assistente";
+        return "Usuário";
+    }, [usuario.tipo]);
 
-    function finalizarAtendimento(id: string) {
-        setConsultas((prev) =>
-            prev.map((c) => (c.id === id ? { ...c, status: "FINALIZADO" } : c))
-        );
-        addNotice({
-            titulo: "Atendimento finalizado",
-            detalhe: "O atendimento foi marcado como “Finalizado”.",
-            prioridade: "BAIXA",
-        });
-    }
+    const navItems: NavItem[] = useMemo(
+        () => [
+            {
+                key: "dashboard",
+                label: "Dashboard",
+                to: "/dashboard-admin", // ✅ mantenha coerente com sua rota atual pós-login (admin)
+                icon: (
+                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M4 4h7v7H4z" />
+                        <path d="M13 4h7v4h-7z" />
+                        <path d="M13 10h7v10h-7z" />
+                        <path d="M4 13h7v7H4z" />
+                    </svg>
+                ),
+            },
+            {
+                key: "agenda",
+                label: "Agenda",
+                to: "/agenda-medica",
+                icon: (
+                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M7 3v3M17 3v3" />
+                        <path d="M4 8h16" />
+                        <path d="M6 6h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" />
+                    </svg>
+                ),
+            },
+            {
+                key: "recepcao",
+                label: "Recepção",
+                to: "/recepcao",
+                icon: (
+                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M3 21h18" />
+                        <path d="M6 21V8a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v13" />
+                        <path d="M9 10h6" />
+                        <path d="M9 14h6" />
+                    </svg>
+                ),
+            },
+            {
+                key: "config",
+                label: "Configurações",
+                to: "/dashboard-admin/config",
+                icon: (
+                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+                        <path d="M19.4 15a7.9 7.9 0 0 0 .1-1 7.9 7.9 0 0 0-.1-1l2-1.6-2-3.4-2.4 1a8.3 8.3 0 0 0-1.7-1l-.4-2.6H9.1L8.7 8a8.3 8.3 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7.9 7.9 0 0 0-.1 1c0 .3 0 .7.1 1l-2 1.6 2 3.4 2.4-1a8.3 8.3 0 0 0 1.7 1l.4 2.6h5.8l.4-2.6a8.3 8.3 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6z" />
+                    </svg>
+                ),
+            },
+        ],
+        []
+    );
 
-    function limparNotificacoes() {
-        setNotificacoes([]);
-    }
+    const statCards: StatCard[] = useMemo(
+        () => [
+            {
+                key: "pacientes",
+                title: "Pacientes",
+                value: "1.284",
+                note: "ativos",
+                accent: COLORS.aqua,
+                icon: (
+                    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M22 21v-2a3 3 0 0 0-2-2.82" />
+                        <path d="M17 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                ),
+            },
+            {
+                key: "consultas",
+                title: "Consultas Hoje",
+                value: "12",
+                note: "agendadas",
+                accent: COLORS.lightGreen,
+                icon: (
+                    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M7 3v3M17 3v3" />
+                        <path d="M4 8h16" />
+                        <path d="M6 6h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" />
+                        <path d="M8 12h4" />
+                        <path d="M8 16h6" />
+                    </svg>
+                ),
+            },
+            {
+                key: "pendentes",
+                title: "Atendimentos Pendentes",
+                value: "3",
+                note: "na fila",
+                accent: COLORS.mid,
+                icon: (
+                    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 2a7 7 0 0 1 4 12c-.6.5-1 1.2-1 2H9c0-.8-.4-1.5-1-2A7 7 0 0 1 12 2z" />
+                        <path d="M9 18h6" />
+                        <path d="M10 22h4" />
+                    </svg>
+                ),
+            },
+            {
+                key: "faturamento",
+                title: "Faturamento (mês)",
+                value: "R$ 38.420,00",
+                note: "estimado",
+                accent: COLORS.darkGreen,
+                icon: (
+                    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 1v22" />
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                ),
+            },
+        ],
+        []
+    );
 
-    function resetFiltros() {
-        setBusca("");
-        setFiltroStatus("TODOS");
-    }
+    const agenda: AgendaItem[] = useMemo(
+        () => [
+            { id: "a1", time: "09:00", patient: "Maria Oliveira", type: "Consulta", status: "Confirmado" },
+            { id: "a2", time: "09:30", patient: "Pedro Souza", type: "Retorno", status: "Em Atendimento" },
+            { id: "a3", time: "10:00", patient: "Fernanda Lima", type: "Consulta", status: "Agendado" },
+            { id: "a4", time: "10:30", patient: "Ana Costa", type: "Exame", status: "Cancelado" },
+            { id: "a5", time: "11:00", patient: "Carlos Mendes", type: "Consulta", status: "Confirmado" },
+        ],
+        []
+    );
 
-    // Estilo para empurrar conteúdo conforme sidebar abre/fecha
-    const contentLeft = sidebarOpen ? SIDEBAR_W_OPEN : SIDEBAR_W_CLOSED;
+    const activities: ActivityItem[] = useMemo(
+        () => [
+            { id: "r1", time: "Agora", title: "Paciente aguardando atendimento", description: "Carlos Mendes chegou e está na recepção.", tone: "info" },
+            { id: "r2", time: "10 min", title: "Consulta atrasada", description: "Retorno de Pedro Souza passou do horário previsto.", tone: "warning" },
+            { id: "r3", time: "35 min", title: "Prontuário atualizado", description: "Anotações adicionadas para Maria Oliveira.", tone: "success" },
+            { id: "r4", time: "1h", title: "2 exames pendentes", description: "Resultados aguardando anexação ao prontuário.", tone: "info" },
+        ],
+        []
+    );
+
+    const shortcuts = useMemo(
+        () => [
+            { key: "novo-paciente", label: "Novo Paciente", icon: "➕" },
+            { key: "novo-retorno", label: "Agendar Retorno", icon: "🗓️" },
+            { key: "anexar-exame", label: "Anexar Exame", icon: "📎" },
+            { key: "financeiro", label: "Resumo Financeiro", icon: "💳" },
+        ],
+        []
+    );
+
+    const kpis = useMemo(
+        () => [
+            { key: "tempo-medio", label: "Tempo médio de espera", value: "12 min", bar: 48, color: COLORS.aqua },
+            { key: "taxa-cancel", label: "Taxa de cancelamento (dia)", value: "8%", bar: 22, color: COLORS.mid },
+            { key: "ocupacao", label: "Ocupação do dia", value: "74%", bar: 74, color: COLORS.darkGreen },
+        ],
+        []
+    );
+
+    const toneStyles = useMemo(() => {
+        return {
+            info: { dot: COLORS.aqua, bg: "#E6FBF7", fg: COLORS.base },
+            success: { dot: COLORS.lightGreen, bg: "#EAFBF0", fg: COLORS.darkGreen },
+            warning: { dot: "#F59E0B", bg: "#FFF7ED", fg: "#7C2D12" },
+        } as const;
+    }, []);
+
+    // Active item simples por pathname
+    const activeKey = useMemo(() => {
+        const path = location.pathname;
+        const match = navItems.find((n) => path.startsWith(n.to));
+        return match?.key ?? "dashboard";
+    }, [location.pathname, navItems]);
 
     return (
-        <div className="min-h-screen bg-[#f7fbfa]">
-            {/* Sidebar fixo (sempre presente, colapsável) */}
-            <Sidebar
-                open={sidebarOpen}
-                activeId={activeMenuId}
-                onToggle={() => setSidebarOpen((v) => !v)}
-                onSelect={(id) => setActiveMenuId(id)}
-            />
-
-            {/* Conteúdo empurrado */}
-            <div
-                style={{
-                    marginLeft: contentLeft,
-                    transition: "margin-left 260ms ease",
+        <div className="min-h-screen bg-slate-50">
+            {/* Sidebar off-canvas */}
+            <aside
+                ref={(el) => {
+                    sidebarRef.current = el;
                 }}
+                tabIndex={-1}
+                className={classNames(
+                    "fixed left-0 top-0 z-40 h-full w-64 overflow-hidden border-r bg-white shadow-sm transition-transform duration-300 focus:outline-none",
+                    sidebarOpen ? "translate-x-0" : "-translate-x-full"
+                )}
+                style={{ borderColor: "rgba(1,35,64,0.10)" }}
+                aria-label="Menu lateral"
             >
-                {/* Header */}
-                <header
-                    className="border-b border-black/5"
-                    style={{
-                        background: `linear-gradient(120deg, rgba(1,35,64,0.10), rgba(69,196,176,0.16), rgba(154,235,163,0.18))`,
-                    }}
-                >
-                    <div className="max-w-6xl mx-auto px-4 py-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                        <div>
-                            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-[rgba(1,35,64,0.95)]">
-                                Dashboard da Clínica
-                            </h1>
-                            <p className="text-sm text-black/60 mt-1">
-                                Visão do dia, agenda organizada e ações rápidas — tudo em uma tela.
-                            </p>
-                            <p className="text-xs text-black/50 mt-2">
-                                Menu lateral recolhível para manter foco (abra/feche pela setinha).
-                            </p>
+                <div className="flex h-16 items-center justify-between px-3">
+                    <div className="flex items-center gap-2">
+                        <div
+                            className="flex h-9 w-9 items-center justify-center rounded-xl font-extrabold shadow-sm"
+                            style={{ backgroundColor: COLORS.base, color: COLORS.lightGreen }}
+                            aria-label="Logo"
+                            title="Abigail"
+                        >
+                            A
                         </div>
-
-                        <div className="flex gap-2">
-                            <Button variant="ghost" onClick={limparNotificacoes} title="Limpar alertas">
-                                Limpar alertas
-                            </Button>
-                            <Button variant="primary" onClick={resetFiltros} title="Limpar busca e filtro">
-                                Reset filtros
-                            </Button>
+                        <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold" style={{ color: COLORS.base }}>
+                                Abigail
+                            </p>
+                            <p className="truncate text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                Painel interno
+                            </p>
                         </div>
                     </div>
-                </header>
 
-                {/* Main */}
-                <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-                    {/* KPIs */}
-                    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        <StatCard label="Consultas hoje" value={kpis.consultasHoje} accent="azul" />
-                        <StatCard label="Em atendimento" value={kpis.emAtendimento} accent="turquesa" />
-                        <StatCard label="Finalizadas" value={kpis.finalizadas} accent="verde" />
-                        <StatCard label="Faltas/Cancelamentos" value={kpis.faltasCancelamentos} accent="petroleo" />
-                    </section>
+                    <button
+                        type="button"
+                        onClick={handleCloseSidebar}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-xl border transition hover:shadow-sm focus:outline-none focus:ring-2 sm:hidden"
+                        style={{ borderColor: "rgba(1,35,64,0.15)", color: COLORS.base }}
+                        aria-label="Fechar menu"
+                        title="Fechar menu"
+                    >
+                        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="M6 6l12 12" />
+                            <path d="M18 6L6 18" />
+                        </svg>
+                    </button>
+                </div>
 
-                    {/* Layout: tabela + sidebar direita */}
-                    <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {/* Tabela */}
-                        <div className="lg:col-span-2 space-y-6">
-                            <Card>
-                                <div className="p-4">
-                                    <SectionHeader
-                                        title="Atendimentos de hoje"
-                                        subtitle="Status claros para reduzir confusão e acelerar a rotina."
-                                    />
+                <nav className="px-2 pb-4">
+                    <p className="px-3 pb-2 pt-1 text-[11px] font-semibold uppercase tracking-wider" style={{ color: "rgba(1,35,64,0.55)" }}>
+                        Menu
+                    </p>
 
-                                    {/* Controles */}
-                                    <div className="mt-4 flex flex-col sm:flex-row gap-2">
-                                        <input
-                                            value={busca}
-                                            onChange={(e) => setBusca(e.target.value)}
-                                            placeholder="Buscar por paciente, profissional, horário, tipo ou status..."
-                                            className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:ring-4"
-                                        />
+                    <ul className="space-y-1">
+                        {navItems.map((item) => (
+                            <li key={item.key}>
+                                <NavRow item={item} active={item.key === activeKey} onNavigate={() => setSidebarOpen(false)} />
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
 
-                                        <select
-                                            value={filtroStatus}
-                                            onChange={(e) => setFiltroStatus(e.target.value as any)}
-                                            className="sm:w-[220px] w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:ring-4"
-                                        >
-                                            <option value="TODOS">Todos os status</option>
-                                            <option value="AGENDADO">Agendado</option>
-                                            <option value="CONFIRMADO">Confirmado</option>
-                                            <option value="EM_ATENDIMENTO">Em atendimento</option>
-                                            <option value="FINALIZADO">Finalizado</option>
-                                            <option value="CANCELADO">Cancelado</option>
-                                            <option value="FALTA">Falta</option>
-                                        </select>
-                                    </div>
+                <div className="absolute bottom-0 left-0 right-0 border-t p-3" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+                    <div className="flex items-center gap-3">
+                        <Avatar name={usuario.nome || "Usuário"} />
+                        <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold" style={{ color: COLORS.base }}>
+                                {usuario.nome || "Usuário"}
+                            </p>
+                            <p className="truncate text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                {roleLabel}
+                            </p>
+                        </div>
+                    </div>
 
-                                    {/* Tabela */}
-                                    <div className="mt-4 overflow-auto">
-                                        <table className="min-w-[760px] w-full text-sm">
-                                            <thead>
-                                                <tr className="text-left text-black/60">
-                                                    <th className="pb-2 font-medium">Horário</th>
-                                                    <th className="pb-2 font-medium">Paciente</th>
-                                                    <th className="pb-2 font-medium">Profissional</th>
-                                                    <th className="pb-2 font-medium">Tipo</th>
-                                                    <th className="pb-2 font-medium">Status</th>
-                                                    <th className="pb-2 font-medium text-right">Ações</th>
-                                                </tr>
-                                            </thead>
+                    <button
+                        type="button"
+                        onClick={onLogout}
+                        className="mt-3 inline-flex w-full items-center justify-center rounded-xl border px-3 py-2 text-xs font-semibold transition hover:shadow-sm focus:outline-none focus:ring-2"
+                        style={{ borderColor: "rgba(1,35,64,0.14)", color: COLORS.base, backgroundColor: "white" }}
+                        aria-label="Sair"
+                        title="Sair"
+                    >
+                        Sair
+                    </button>
+                </div>
+            </aside>
 
-                                            <tbody className="divide-y divide-black/5">
-                                                {consultasFiltradas.length === 0 ? (
-                                                    <tr>
-                                                        <td colSpan={6} className="py-8 text-center text-black/60">
-                                                            Nenhum atendimento encontrado com esses filtros.
-                                                        </td>
-                                                    </tr>
-                                                ) : (
-                                                    consultasFiltradas.map((c) => {
-                                                        const disableStart =
-                                                            c.status === "EM_ATENDIMENTO" ||
-                                                            c.status === "FINALIZADO" ||
-                                                            c.status === "CANCELADO" ||
-                                                            c.status === "FALTA";
-                                                        const disableFinish = c.status !== "EM_ATENDIMENTO";
+            {/* Overlay (mobile) */}
+            {sidebarOpen ? (
+                <button
+                    type="button"
+                    className="fixed inset-0 z-30 bg-black/25 sm:hidden"
+                    aria-label="Fechar menu lateral"
+                    onClick={handleCloseSidebar}
+                />
+            ) : null}
 
-                                                        return (
-                                                            <tr key={c.id} className="hover:bg-black/[0.02]">
-                                                                <td className="py-3 font-medium">{c.horario}</td>
-                                                                <td className="py-3">{c.paciente}</td>
-                                                                <td className="py-3">{c.profissional}</td>
-                                                                <td className="py-3">{c.tipo}</td>
-                                                                <td className="py-3">
-                                                                    <span className={`px-2 py-1 rounded-lg text-xs font-medium ${statusPillClass(c.status)}`}>
-                                                                        {statusLabel(c.status)}
-                                                                    </span>
-                                                                </td>
-                                                                <td className="py-3">
-                                                                    <div className="flex justify-end gap-2">
-                                                                        <Button
-                                                                            variant="ghost"
-                                                                            onClick={() => iniciarAtendimento(c.id)}
-                                                                            disabled={disableStart}
-                                                                            title="Marcar como em atendimento"
-                                                                        >
-                                                                            Iniciar
-                                                                        </Button>
-                                                                        <Button
-                                                                            variant="ghost"
-                                                                            onClick={() => finalizarAtendimento(c.id)}
-                                                                            disabled={disableFinish}
-                                                                            title="Marcar como finalizado"
-                                                                        >
-                                                                            Finalizar
-                                                                        </Button>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        );
-                                                    })
-                                                )}
-                                            </tbody>
-                                        </table>
-                                    </div>
+            {/* Topbar */}
+            <header className="sticky top-0 z-20 border-b bg-white/90 backdrop-blur" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+                <div className="flex h-16 w-full items-center justify-between px-4 sm:px-6">
+                    {/* Esquerda */}
+                    <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            onClick={handleToggleSidebar}
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border bg-white transition hover:shadow-sm focus:outline-none focus:ring-2"
+                            style={{ borderColor: "rgba(1,35,64,0.15)", color: COLORS.base }}
+                            aria-label={sidebarOpen ? "Fechar menu lateral" : "Abrir menu lateral"}
+                            title={sidebarOpen ? "Fechar menu" : "Abrir menu"}
+                        >
+                            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                {sidebarOpen ? (
+                                    <>
+                                        <path d="M6 6l12 12" />
+                                        <path d="M18 6L6 18" />
+                                    </>
+                                ) : (
+                                    <>
+                                        <path d="M4 7h16" />
+                                        <path d="M4 12h16" />
+                                        <path d="M4 17h16" />
+                                    </>
+                                )}
+                            </svg>
+                        </button>
 
-                                    <p className="mt-3 text-xs text-black/50">
-                                        *Dados mock apenas para demonstrar a experiência do dashboard.
-                                    </p>
-                                </div>
-                            </Card>
+                        <Link to="/dashboard-admin" className="flex items-center gap-2">
+                            <div
+                                className="flex h-9 w-9 items-center justify-center rounded-xl font-extrabold shadow-sm"
+                                style={{ backgroundColor: COLORS.base, color: COLORS.lightGreen }}
+                                aria-label="A Abigail"
+                                title="A Abigail"
+                            >
+                                A
+                            </div>
+                            <div className="leading-tight">
+                                <p className="text-sm font-semibold" style={{ color: COLORS.base }}>
+                                    A Abigail
+                                </p>
+                                <p className="text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                    Dashboard
+                                </p>
+                            </div>
+                        </Link>
+                    </div>
 
-                            {/* Valor (didático e persuasivo) */}
-                            <Card>
-                                <div className="p-4">
-                                    <SectionHeader
-                                        title="O que este dashboard resolve na prática?"
-                                        subtitle="Organização do dia sem complicar com tecnologia."
-                                    />
-                                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                        <div className="rounded-xl border border-black/5 p-3 bg-[rgba(154,235,163,0.18)]">
-                                            <p className="text-sm font-medium text-[rgba(1,35,64,0.95)]">Clareza</p>
-                                            <p className="text-xs text-black/60 mt-1">
-                                                Indicadores e status evitam ruído na rotina.
-                                            </p>
-                                        </div>
-                                        <div className="rounded-xl border border-black/5 p-3 bg-[rgba(69,196,176,0.16)]">
-                                            <p className="text-sm font-medium text-[rgba(1,35,64,0.95)]">Fluxo</p>
-                                            <p className="text-xs text-black/60 mt-1">
-                                                Ações rápidas ajudam recepção e médico no dia a dia.
-                                            </p>
-                                        </div>
-                                        <div className="rounded-xl border border-black/5 p-3 bg-[rgba(2,89,89,0.10)]">
-                                            <p className="text-sm font-medium text-[rgba(1,35,64,0.95)]">Controle</p>
-                                            <p className="text-xs text-black/60 mt-1">
-                                                Uma tela para saber “como está o dia” em segundos.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Card>
+                    {/* Direita */}
+                    <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border bg-white transition hover:shadow-sm focus:outline-none focus:ring-2"
+                            style={{ borderColor: "rgba(1,35,64,0.15)", color: COLORS.base }}
+                            aria-label="Notificações"
+                            title="Notificações"
+                        >
+                            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M18 8a6 6 0 10-12 0c0 7-3 7-3 7h18s-3 0-3-7" />
+                                <path d="M13.73 21a2 2 0 01-3.46 0" />
+                            </svg>
+                            <span
+                                className="absolute -right-1 -top-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full px-1 text-[11px] font-bold"
+                                style={{ backgroundColor: COLORS.darkGreen, color: "white" }}
+                            >
+                                3
+                            </span>
+                        </button>
+
+                        <div className="hidden items-center gap-3 sm:flex">
+                            <div className="text-right leading-tight">
+                                <p className="text-sm font-semibold" style={{ color: COLORS.base }}>
+                                    {usuario.nome || "Usuário"}
+                                </p>
+                                <p className="text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                    {roleLabel}
+                                </p>
+                            </div>
+                            <Avatar name={usuario.nome || "Usuário"} />
                         </div>
 
-                        {/* Painel lateral (notificações + ajuda) */}
-                        <aside className="space-y-6">
-                            <Card>
-                                <div className="p-4">
-                                    <SectionHeader title="Alertas e notificações" subtitle="O sistema sinaliza o que exige atenção." />
+                        <div className="sm:hidden">
+                            <Avatar name={usuario.nome || "Usuário"} />
+                        </div>
+                    </div>
+                </div>
+            </header>
 
-                                    <ul className="mt-4 space-y-3">
-                                        {notificacoes.length === 0 ? (
-                                            <li className="text-sm text-black/60">Sem notificações no momento.</li>
-                                        ) : (
-                                            notificacoes.slice(0, 6).map((n) => (
-                                                <li key={n.id} className="p-3 rounded-xl border border-black/5 bg-white">
-                                                    <div className="flex items-start justify-between gap-3">
-                                                        <div>
-                                                            <p className="text-sm font-medium">{n.titulo}</p>
-                                                            {n.detalhe ? <p className="text-xs text-black/60 mt-1">{n.detalhe}</p> : null}
-                                                        </div>
-                                                        <span className={`px-2 py-1 rounded-lg text-xs font-medium ${prioridadeBadgeClass(n.prioridade)}`}>
-                                                            {n.prioridade}
-                                                        </span>
-                                                    </div>
-                                                </li>
-                                            ))
-                                        )}
-                                    </ul>
-                                </div>
-                            </Card>
+            {/* Conteúdo: empurra no desktop */}
+            <div className={classNames("transition-[margin-left] duration-300", sidebarOpen ? "sm:ml-64" : "sm:ml-0")}>
+                <main className="w-full px-4 py-6 sm:px-6">
+                    <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <h1 className="text-xl font-bold" style={{ color: COLORS.base }}>
+                                Dashboard
+                            </h1>
+                            <p className="text-sm" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                Visão geral do dia e próximos atendimentos.
+                            </p>
+                        </div>
 
-                            <Card>
-                                <div className="p-4">
-                                    <SectionHeader title="Busca rápida" subtitle="Sem navegar em várias telas." />
-                                    <div className="mt-4 rounded-xl border border-black/5 p-3 bg-[rgba(69,196,176,0.10)]">
-                                        <p className="text-xs text-black/60">Exemplos de busca:</p>
-                                        <ul className="mt-2 text-sm text-[rgba(1,35,64,0.95)] space-y-1">
-                                            <li>• “Dra. Paula”</li>
-                                            <li>• “09:30”</li>
-                                            <li>• “Em atendimento”</li>
-                                            <li>• “Exame”</li>
-                                        </ul>
+                        <button
+                            type="button"
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold shadow-sm transition hover:shadow-md focus:outline-none focus:ring-2"
+                            style={{ backgroundColor: COLORS.mid, color: "white" }}
+                            aria-label="Novo Atendimento"
+                            title="Novo Atendimento"
+                            onClick={() => navigate("/agenda-medica")}
+                        >
+                            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M12 5v14" />
+                                <path d="M5 12h14" />
+                            </svg>
+                            Novo Atendimento
+                        </button>
+                    </div>
+
+                    {/* Stat cards */}
+                    <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+                        {statCards.map((card) => (
+                            <div
+                                key={card.key}
+                                className="rounded-2xl border bg-white p-4 shadow-sm transition hover:shadow-md"
+                                style={{ borderColor: "rgba(1,35,64,0.10)" }}
+                            >
+                                <div className="flex items-start justify-between gap-3">
+                                    <div>
+                                        <p className="text-sm font-semibold" style={{ color: "rgba(1,35,64,0.75)" }}>
+                                            {card.title}
+                                        </p>
+                                        <p className="mt-2 text-2xl font-extrabold" style={{ color: COLORS.base }}>
+                                            {card.value}
+                                        </p>
+                                        {card.note ? (
+                                            <p className="mt-1 text-xs" style={{ color: "rgba(1,35,64,0.60)" }}>
+                                                {card.note}
+                                            </p>
+                                        ) : null}
+                                    </div>
+
+                                    <div
+                                        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border"
+                                        style={{
+                                            backgroundColor: "rgba(1,35,64,0.03)",
+                                            borderColor: "rgba(1,35,64,0.10)",
+                                            color: card.accent,
+                                        }}
+                                        aria-hidden="true"
+                                    >
+                                        {card.icon}
                                     </div>
                                 </div>
-                            </Card>
 
-                            <Card>
-                                <div className="p-4">
-                                    <p className="text-xs text-black/50">
-                                        Paleta:{" "}
-                                        <span className="font-medium">#012340</span> •{" "}
-                                        <span className="font-medium">#025959</span> •{" "}
-                                        <span className="font-medium">#027333</span> •{" "}
-                                        <span className="font-medium">#45C4B0</span> •{" "}
-                                        <span className="font-medium">#9AEBA3</span>
-                                    </p>
-                                    <p className="text-xs text-black/50 mt-2">
-                                        Menu ativo: <span className="font-medium">{activeMenuId}</span>
+                                <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                                    <div className="h-full rounded-full" style={{ width: "68%", backgroundColor: card.accent }} />
+                                </div>
+                            </div>
+                        ))}
+                    </section>
+
+                    {/* Main grid */}
+                    <section className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
+                        {/* Agenda */}
+                        <div className="rounded-2xl border bg-white p-4 shadow-sm xl:col-span-2" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+                            <div className="mb-4 flex items-center justify-between gap-3">
+                                <div>
+                                    <h2 className="text-base font-bold" style={{ color: COLORS.base }}>
+                                        Agenda do dia
+                                    </h2>
+                                    <p className="text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                        Próximas consultas e status.
                                     </p>
                                 </div>
-                            </Card>
-                        </aside>
+
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        className="rounded-xl border bg-white px-3 py-2 text-xs font-semibold transition hover:bg-slate-50"
+                                        style={{ borderColor: "rgba(1,35,64,0.12)", color: COLORS.base }}
+                                    >
+                                        Dia
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="rounded-xl border bg-white px-3 py-2 text-xs font-semibold transition hover:bg-slate-50"
+                                        style={{ borderColor: "rgba(1,35,64,0.12)", color: "rgba(1,35,64,0.70)" }}
+                                    >
+                                        Semana
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="hidden rounded-xl border bg-white px-3 py-2 text-xs font-semibold transition hover:bg-slate-50 sm:inline-flex"
+                                        style={{ borderColor: "rgba(1,35,64,0.12)", color: "rgba(1,35,64,0.70)" }}
+                                    >
+                                        Mês
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="divide-y" style={{ borderColor: "rgba(1,35,64,0.08)" }}>
+                                {agenda.map((item) => (
+                                    <div key={item.id} className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div
+                                                className="inline-flex h-10 w-14 items-center justify-center rounded-xl border text-sm font-bold"
+                                                style={{
+                                                    borderColor: "rgba(1,35,64,0.12)",
+                                                    backgroundColor: "rgba(1,35,64,0.03)",
+                                                    color: COLORS.base,
+                                                }}
+                                            >
+                                                {item.time}
+                                            </div>
+
+                                            <div className="min-w-0">
+                                                <p className="truncate text-sm font-semibold" style={{ color: COLORS.base }}>
+                                                    {item.patient}
+                                                </p>
+                                                <p className="text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                                    {item.type}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-between gap-3 sm:justify-end">
+                                            <StatusBadge status={item.status} />
+                                            <button
+                                                type="button"
+                                                className="inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition hover:shadow-sm"
+                                                style={{
+                                                    borderColor: "rgba(1,35,64,0.14)",
+                                                    backgroundColor: "white",
+                                                    color: item.status === "Em Atendimento" ? COLORS.mid : COLORS.base,
+                                                }}
+                                                aria-label={`Ação para ${item.patient}`}
+                                            >
+                                                <IconBadge>
+                                                    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path d="M10 8h10" />
+                                                        <path d="M10 12h10" />
+                                                        <path d="M10 16h10" />
+                                                        <path d="M4 8h2" />
+                                                        <path d="M4 12h2" />
+                                                        <path d="M4 16h2" />
+                                                    </svg>
+                                                </IconBadge>
+                                                Ver
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Atividades */}
+                        <div className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+                            <div className="mb-4">
+                                <h2 className="text-base font-bold" style={{ color: COLORS.base }}>
+                                    Atividades recentes
+                                </h2>
+                                <p className="text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                    Alertas e atualizações rápidas.
+                                </p>
+                            </div>
+
+                            <ul className="space-y-3">
+                                {activities.map((a) => {
+                                    const tone = toneStyles[a.tone];
+                                    return (
+                                        <li
+                                            key={a.id}
+                                            className="rounded-2xl border p-3"
+                                            style={{ borderColor: "rgba(1,35,64,0.10)", backgroundColor: tone.bg }}
+                                        >
+                                            <div className="flex items-start gap-3">
+                                                <div className="mt-1 h-2.5 w-2.5 rounded-full" style={{ backgroundColor: tone.dot }} aria-hidden="true" />
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <p className="truncate text-sm font-semibold" style={{ color: tone.fg }}>
+                                                            {a.title}
+                                                        </p>
+                                                        <span className="shrink-0 text-[11px] font-semibold" style={{ color: "rgba(1,35,64,0.60)" }}>
+                                                            {a.time}
+                                                        </span>
+                                                    </div>
+                                                    <p className="mt-1 text-xs" style={{ color: "rgba(1,35,64,0.70)" }}>
+                                                        {a.description}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+
+                            <div className="mt-4">
+                                <button
+                                    type="button"
+                                    className="w-full rounded-2xl px-4 py-2 text-sm font-semibold shadow-sm transition hover:shadow-md focus:outline-none focus:ring-2"
+                                    style={{ backgroundColor: COLORS.aqua, color: COLORS.base }}
+                                >
+                                    Ver todas as notificações
+                                </button>
+                            </div>
+                        </div>
                     </section>
+
+                    {/* Bottom strip */}
+                    <section className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                        <div className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+                            <h3 className="text-sm font-bold" style={{ color: COLORS.base }}>
+                                Atalhos rápidos
+                            </h3>
+                            <p className="mt-1 text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                Ações comuns do dia a dia.
+                            </p>
+
+                            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                {shortcuts.map((b) => (
+                                    <button
+                                        key={b.key}
+                                        type="button"
+                                        className="flex items-center gap-3 rounded-2xl border bg-white px-4 py-3 text-left text-sm font-semibold transition hover:bg-slate-50 hover:shadow-sm"
+                                        style={{ borderColor: "rgba(1,35,64,0.12)", color: COLORS.base }}
+                                    >
+                                        <span
+                                            className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border text-base"
+                                            style={{ borderColor: "rgba(1,35,64,0.10)", backgroundColor: "rgba(154,235,163,0.18)" }}
+                                            aria-hidden="true"
+                                        >
+                                            {b.icon}
+                                        </span>
+                                        <span className="truncate">{b.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+                            <h3 className="text-sm font-bold" style={{ color: COLORS.base }}>
+                                Resumo operacional
+                            </h3>
+                            <p className="mt-1 text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                Indicadores simples para decisão rápida.
+                            </p>
+
+                            <div className="mt-4 space-y-3">
+                                {kpis.map((kpi) => (
+                                    <div key={kpi.key} className="rounded-2xl border p-3" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+                                        <div className="flex items-center justify-between gap-3">
+                                            <p className="text-sm font-semibold" style={{ color: "rgba(1,35,64,0.80)" }}>
+                                                {kpi.label}
+                                            </p>
+                                            <p className="text-sm font-bold" style={{ color: COLORS.base }}>
+                                                {kpi.value}
+                                            </p>
+                                        </div>
+                                        <div className="mt-2 h-2 w-full rounded-full bg-slate-100">
+                                            <div className="h-full rounded-full" style={{ width: `${kpi.bar}%`, backgroundColor: kpi.color }} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    <footer className="mt-8 pb-8 text-center text-xs" style={{ color: "rgba(1,35,64,0.55)" }}>
+                        © {new Date().getFullYear()} A Abigail • Dashboard interno
+                    </footer>
                 </main>
             </div>
         </div>
