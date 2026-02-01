@@ -9,7 +9,6 @@ import Footer from "./components/footer/Footer";
 // Páginas públicas
 import Home from "./pages/home/Home";
 import Sobre from "./pages/sobre/Sobre";
-import Feature from "./pages/funcionalidades/Feature";
 import Login from "./pages/login/Login";
 import Cadastro from "./pages/cadastro/Cadastro";
 
@@ -102,3 +101,4 @@ export default function App() {
         </AuthProvider>
     );
 }
+

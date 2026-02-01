@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 
+// Define o formato de um item do menu lateral (sidebar)
 type NavItem = {
     key: string;
     label: string;
@@ -9,6 +10,7 @@ type NavItem = {
     icon: React.ReactNode;
 };
 
+// Define o formato de um card de estatística
 type StatCard = {
     key: string;
     title: string;
@@ -18,6 +20,7 @@ type StatCard = {
     icon: React.ReactNode;
 };
 
+// Define o formato de cada linha da agenda
 type AgendaItem = {
     id: string;
     time: string;
@@ -26,6 +29,7 @@ type AgendaItem = {
     status: "Confirmado" | "Em Atendimento" | "Agendado" | "Cancelado";
 };
 
+// Define o formato de atividades recentes (notificações)
 type ActivityItem = {
     id: string;
     time: string;
@@ -34,18 +38,21 @@ type ActivityItem = {
     tone: "info" | "success" | "warning";
 };
 
+// Define as props do componente IconBadge
 type IconBadgeProps = {
     children: React.ReactNode;
     className?: string;
     title?: string;
 };
 
+// Define as props do componente NavRow(...) (cada linha do menu)
 type NavRowProps = {
     item: NavItem;
     active: boolean;
     onNavigate?: () => void;
 };
 
+// É um objeto de cores padrão do dashboard
 const COLORS = {
     base: "#012340",
     mid: "#025959",
@@ -54,10 +61,12 @@ const COLORS = {
     lightGreen: "#9AEBA3",
 };
 
+// Junta classes do Tailwind com segurança
 function classNames(...classes: Array<string | false | null | undefined>) {
     return classes.filter(Boolean).join(" ");
 }
 
+// Badge para ícones (padroniza tamanho/alinhamento)
 function IconBadge({ children, className, title }: IconBadgeProps) {
     return (
         <span
@@ -71,42 +80,42 @@ function IconBadge({ children, className, title }: IconBadgeProps) {
     );
 }
 
-/**
- * ✅ Explicação do “DA”:
- * Isso é o fallback do Avatar: ele pega as iniciais do nome do usuário.
- * Ex.: "Dra. Ana" → "DA".
- * Vem daqui (Avatar) e aparece sempre que você renderiza <Avatar name="..." />
- */
+// Avatar do usuário (ícone de “pessoa”)
 function Avatar({ name }: { name: string }) {
-    const initials = useMemo(() => {
-        const parts = (name || "").trim().split(/\s+/).slice(0, 2);
-        return parts.map((p) => p?.[0]?.toUpperCase()).join("");
-    }, [name]);
-
     return (
         <div
             className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold shadow-sm ring-2"
-            style={{ backgroundColor: COLORS.aqua, color: COLORS.base, borderColor: COLORS.lightGreen }}
-            aria-label={`Avatar de ${name}`}
+            style={{
+                backgroundColor: COLORS.aqua,
+                color: COLORS.base,
+                borderColor: COLORS.lightGreen,
+            }}
+            aria-label={`Usuário ${name}`}
             title={name}
         >
-            {initials || "U"}
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                strokeLinejoin="round" aria-hidden="true"
+            >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+            </svg>
         </div>
     );
 }
 
+// Badge de status (cor muda conforme o status)
 function StatusBadge({ status }: { status: AgendaItem["status"] }) {
     const cfg = useMemo(() => {
         switch (status) {
             case "Confirmado":
                 return { bg: COLORS.lightGreen, fg: COLORS.darkGreen };
             case "Em Atendimento":
-                return { bg: COLORS.aqua, fg: COLORS.base };
+                return { bg: COLORS.aqua, fg: COLORS.darkGreen };
             case "Agendado":
-                return { bg: "#E5F6F3", fg: COLORS.mid };
+                return { bg: "#E5F6F3", fg: COLORS.darkGreen };
             case "Cancelado":
             default:
-                return { bg: "#FEE2E2", fg: "#991B1B" };
+                return { bg: "#FEE2E2", fg: COLORS.darkGreen };
         }
     }, [status]);
 
@@ -120,6 +129,7 @@ function StatusBadge({ status }: { status: AgendaItem["status"] }) {
     );
 }
 
+// Linha do menu lateral (link com destaque quando ativo)
 function NavRow({ item, active, onNavigate }: NavRowProps) {
     return (
         <Link
@@ -127,26 +137,35 @@ function NavRow({ item, active, onNavigate }: NavRowProps) {
             onClick={onNavigate}
             className={classNames(
                 "group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition",
-                active ? "shadow-sm" : "hover:bg-slate-50"
+                "hover:bg-[#45c4b01f]",
+                active && "shadow-sm"
             )}
             style={{
-                backgroundColor: active ? "rgba(69,196,176,0.14)" : undefined,
-                color: active ? COLORS.base : "rgba(1,35,64,0.85)",
+                backgroundColor: active ? "#45c4b024" : undefined,
+                color: active ? COLORS.base : "#012340d9",
             }}
         >
             <span
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border"
+                className={classNames(
+                    "inline-flex h-9 w-9 items-center justify-center rounded-xl border transition",
+                    "group-hover:bg-[#45c4b02e] group-hover:border-[#45c4b059]",
+                    active && "bg-[#45c4b02e] border-[#45c4b059]"
+                )}
                 style={{
-                    borderColor: active ? "rgba(69,196,176,0.35)" : "rgba(1,35,64,0.12)",
-                    backgroundColor: active ? "rgba(69,196,176,0.18)" : "white",
-                    color: active ? COLORS.mid : "rgba(1,35,64,0.75)",
+                    color: active ? COLORS.mid : "#012340bf",
                 }}
                 aria-hidden="true"
             >
                 {item.icon}
             </span>
 
-            <span className="min-w-0 flex-1 truncate">{item.label}</span>
+            <span
+                className={classNames(
+                    "min-w-0 flex-1 truncate transition group-hover:text-[#012340f2]"
+                )}
+            >
+                {item.label}
+            </span>
 
             <span>
                 <svg viewBox="0 0 24 24" className="h-4 w-4 opacity-60" fill="none" stroke="currentColor" strokeWidth="2">
@@ -158,25 +177,25 @@ function NavRow({ item, active, onNavigate }: NavRowProps) {
 }
 
 export default function Dashboard() {
+    // ===== CONTEXTO / ROTAS =====
     const { usuario, handleLogout } = useContext(AuthContext);
     const location = useLocation();
     const navigate = useNavigate();
 
-    // ✅ Proteção simples: sem token, não entra
     const isLoggedIn = usuario.token !== "";
 
-    // Sidebar off-canvas (começa fechada)
+    // ===== SIDEBAR OFF-CANVAS (ABRE/FECHA) =====
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
-    // Ref para foco no sidebar ao abrir (a11y)
+    // ===== ACESSIBILIDADE (FOCO NO SIDEBAR) =====
     const sidebarRef = useRef<HTMLElement | null>(null);
 
-    // ✅ Fecha sidebar quando troca de rota
+    // ===== EFEITO: FECHA SIDEBAR AO MUDAR ROTA =====
     useEffect(() => {
         setSidebarOpen(false);
     }, [location.pathname]);
 
-    // ✅ ESC fecha sidebar; e foca sidebar ao abrir
+    // ===== EFEITO: ESC FECHA + FOCO AO ABRIR =====
     useEffect(() => {
         function onKeyDown(e: KeyboardEvent) {
             if (e.key === "Escape") setSidebarOpen(false);
@@ -188,6 +207,7 @@ export default function Dashboard() {
         return () => window.removeEventListener("keydown", onKeyDown);
     }, [sidebarOpen]);
 
+    // ===== HANDLERS (SIDEBAR / LOGOUT) =====
     const handleToggleSidebar = () => setSidebarOpen((v) => !v);
     const handleCloseSidebar = () => setSidebarOpen(false);
 
@@ -196,12 +216,12 @@ export default function Dashboard() {
         navigate("/login", { replace: true });
     };
 
-    // ✅ Bloqueia acesso
+    // ===== BLOQUEIO (SEM TOKEN) =====
     if (!isLoggedIn) {
         return <Navigate to="/login" replace />;
     }
 
-    // Mostra o tipo como “cargo” (simples e direto)
+    // ===== LABEL DE PERFIL (TIPO DO USUÁRIO) =====
     const roleLabel = useMemo(() => {
         if (usuario.tipo === "admin") return "Administrador(a)";
         if (usuario.tipo === "medico") return "Médico(a)";
@@ -209,12 +229,13 @@ export default function Dashboard() {
         return "Usuário";
     }, [usuario.tipo]);
 
+    // ===== MENU LATERAL (ITENS) =====
     const navItems: NavItem[] = useMemo(
         () => [
             {
                 key: "dashboard",
                 label: "Dashboard",
-                to: "/dashboard-admin", // ✅ mantenha coerente com sua rota atual pós-login (admin)
+                to: "/", // manter coerente com a rota atual pós-login (admin)
                 icon: (
                     <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M4 4h7v7H4z" />
@@ -254,16 +275,29 @@ export default function Dashboard() {
                 label: "Configurações",
                 to: "/dashboard-admin/config",
                 icon: (
-                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
-                        <path d="M19.4 15a7.9 7.9 0 0 0 .1-1 7.9 7.9 0 0 0-.1-1l2-1.6-2-3.4-2.4 1a8.3 8.3 0 0 0-1.7-1l-.4-2.6H9.1L8.7 8a8.3 8.3 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7.9 7.9 0 0 0-.1 1c0 .3 0 .7.1 1l-2 1.6 2 3.4 2.4-1a8.3 8.3 0 0 0 1.7 1l.4 2.6h5.8l.4-2.6a8.3 8.3 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6z" />
+                    <svg
+                        viewBox="0 0 24 24"
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 
+                    0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 
+                    0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 
+                    2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 
+                    0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c0 .66.39 1.26 1 1.51H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
                     </svg>
-                ),
+                )
             },
         ],
         []
     );
 
+    // ===== CARDS SUPERIORES (ESTATÍSTICAS) =====
     const statCards: StatCard[] = useMemo(
         () => [
             {
@@ -328,6 +362,7 @@ export default function Dashboard() {
         []
     );
 
+    // ===== AGENDA (LISTA DO DIA) =====
     const agenda: AgendaItem[] = useMemo(
         () => [
             { id: "a1", time: "09:00", patient: "Maria Oliveira", type: "Consulta", status: "Confirmado" },
@@ -339,6 +374,7 @@ export default function Dashboard() {
         []
     );
 
+    // ===== ATIVIDADES RECENTES (NOTIFICAÇÕES) =====
     const activities: ActivityItem[] = useMemo(
         () => [
             { id: "r1", time: "Agora", title: "Paciente aguardando atendimento", description: "Carlos Mendes chegou e está na recepção.", tone: "info" },
@@ -349,6 +385,7 @@ export default function Dashboard() {
         []
     );
 
+    // ===== BOTÕES DE ATALHOS =====
     const shortcuts = useMemo(
         () => [
             { key: "novo-paciente", label: "Novo Paciente", icon: "➕" },
@@ -359,6 +396,7 @@ export default function Dashboard() {
         []
     );
 
+    // ===== KPIS (BARRAS) =====
     const kpis = useMemo(
         () => [
             { key: "tempo-medio", label: "Tempo médio de espera", value: "12 min", bar: 48, color: COLORS.aqua },
@@ -368,24 +406,31 @@ export default function Dashboard() {
         []
     );
 
+    // ===== TONS VISUAIS (INFO / SUCCESS / WARNING) =====
     const toneStyles = useMemo(() => {
         return {
             info: { dot: COLORS.aqua, bg: "#E6FBF7", fg: COLORS.base },
             success: { dot: COLORS.lightGreen, bg: "#EAFBF0", fg: COLORS.darkGreen },
-            warning: { dot: "#F59E0B", bg: "#FFF7ED", fg: "#7C2D12" },
+            warning: { dot: "#ff0404", bg: "#FFF7ED", fg: "#7C2D12" },
         } as const;
     }, []);
 
-    // Active item simples por pathname
-    const activeKey = useMemo(() => {
-        const path = location.pathname;
-        const match = navItems.find((n) => path.startsWith(n.to));
-        return match?.key ?? "dashboard";
-    }, [location.pathname, navItems]);
+    // Período selecionado (UI)
+    const [periodoAtivo, setPeriodoAtivo] = useState<"Dia" | "Semana" | "Mês">("Dia");
 
     return (
-        <div className="min-h-screen bg-slate-50">
-            {/* Sidebar off-canvas */}
+
+        <div className="min-h-screen bg-slate-100">
+
+            {sidebarOpen && (
+                <div
+                    className="fixed inset-0 z-30 bg-slate-10 cursor-pointer"
+                    onClick={handleCloseSidebar}
+                    aria-hidden="true"
+                />
+            )}
+
+            {/* ===== SIDEBAR (OFF-CANVAS) ===== */}
             <aside
                 ref={(el) => {
                     sidebarRef.current = el;
@@ -395,66 +440,80 @@ export default function Dashboard() {
                     "fixed left-0 top-0 z-40 h-full w-64 overflow-hidden border-r bg-white shadow-sm transition-transform duration-300 focus:outline-none",
                     sidebarOpen ? "translate-x-0" : "-translate-x-full"
                 )}
-                style={{ borderColor: "rgba(1,35,64,0.10)" }}
+                style={{ borderColor: "#0123401a" }}
                 aria-label="Menu lateral"
             >
+                {/* ===== SIDEBAR: CABEÇALHO ===== */}
                 <div className="flex h-16 items-center justify-between px-3">
                     <div className="flex items-center gap-2">
-                        <div
-                            className="flex h-9 w-9 items-center justify-center rounded-xl font-extrabold shadow-sm"
-                            style={{ backgroundColor: COLORS.base, color: COLORS.lightGreen }}
-                            aria-label="Logo"
-                            title="Abigail"
-                        >
-                            A
-                        </div>
-                        <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold" style={{ color: COLORS.base }}>
-                                Abigail
-                            </p>
-                            <p className="truncate text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
-                                Painel interno
-                            </p>
+                        <div className="flex items-center gap-2 group cursor-default">
+                            <div className="w-10 h-10 bg-[#012340] rounded-lg flex items-center justify-center transition-transform duration-300 group-hover:rotate-12">
+                                <span className="text-white font-bold italic">A</span>
+                            </div>
+
+                            <span className="text-2xl font-black tracking-tighter text-[#012340] transition-colors duration-300 group-hover:text-[#45C4B0]">
+                                Abgail
+                            </span>
                         </div>
                     </div>
 
                     <button
                         type="button"
                         onClick={handleCloseSidebar}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-xl border transition hover:shadow-sm focus:outline-none focus:ring-2 sm:hidden"
-                        style={{ borderColor: "rgba(1,35,64,0.15)", color: COLORS.base }}
+                        className="inline-flex h-9 w-9 items-center justify-center cursor-pointer"
+                        style={{ color: COLORS.base }}
                         aria-label="Fechar menu"
                         title="Fechar menu"
                     >
-                        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <svg
+                            viewBox="0 0 24 24"
+                            className="h-5 w-5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                        >
                             <path d="M6 6l12 12" />
                             <path d="M18 6L6 18" />
                         </svg>
                     </button>
                 </div>
 
+                {/* ===== SIDEBAR: MENU ===== */}
                 <nav className="px-2 pb-4">
-                    <p className="px-3 pb-2 pt-1 text-[11px] font-semibold uppercase tracking-wider" style={{ color: "rgba(1,35,64,0.55)" }}>
+                    <p className="px-3 pb-2 pt-1 text-[14px] font-semibold uppercase tracking-wider" style={{ color: "#0123408c" }}>
                         Menu
                     </p>
 
                     <ul className="space-y-1">
-                        {navItems.map((item) => (
-                            <li key={item.key}>
-                                <NavRow item={item} active={item.key === activeKey} onNavigate={() => setSidebarOpen(false)} />
-                            </li>
-                        ))}
+                        {navItems.map((item) => {
+                            const isActive =
+                                item.to === "/"
+                                    ? location.pathname === "/"
+                                    : location.pathname.startsWith(item.to);
+
+                            return (
+                                <li key={item.key}>
+                                    <NavRow
+                                        item={item}
+                                        active={isActive}
+                                        onNavigate={() => setSidebarOpen(false)}
+                                    />
+                                </li>
+                            );
+                        })}
                     </ul>
                 </nav>
 
-                <div className="absolute bottom-0 left-0 right-0 border-t p-3" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+                {/* ===== SIDEBAR: PERFIL + LOGOUT ===== */}
+                <div className="absolute bottom-0 left-0 right-0 border-t p-3" style={{ borderColor: "#0123401a" }}>
                     <div className="flex items-center gap-3">
                         <Avatar name={usuario.nome || "Usuário"} />
                         <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold" style={{ color: COLORS.base }}>
+                            <p className="truncate text-x font-semibold" style={{ color: COLORS.base }}>
                                 {usuario.nome || "Usuário"}
                             </p>
-                            <p className="truncate text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                            <p className="truncate text-xs" style={{ color: "#012340a6" }}>
                                 {roleLabel}
                             </p>
                         </div>
@@ -463,8 +522,9 @@ export default function Dashboard() {
                     <button
                         type="button"
                         onClick={onLogout}
-                        className="mt-3 inline-flex w-full items-center justify-center rounded-xl border px-3 py-2 text-xs font-semibold transition hover:shadow-sm focus:outline-none focus:ring-2"
-                        style={{ borderColor: "rgba(1,35,64,0.14)", color: COLORS.base, backgroundColor: "white" }}
+                        className="mt-3 inline-flex w-full items-center justify-center rounded-xl border px-3 py-2 text-sm font-semibold transition 
+                                    hover:shadow-sm focus:outline-none focus:ring-2 cursor-pointer"
+                        style={{ borderColor: "#01234024", backgroundColor: COLORS.mid, color: "white" }}
                         aria-label="Sair"
                         title="Sair"
                     >
@@ -473,7 +533,7 @@ export default function Dashboard() {
                 </div>
             </aside>
 
-            {/* Overlay (mobile) */}
+            {/* ===== OVERLAY (MOBILE) ===== */}
             {sidebarOpen ? (
                 <button
                     type="button"
@@ -483,16 +543,17 @@ export default function Dashboard() {
                 />
             ) : null}
 
-            {/* Topbar */}
-            <header className="sticky top-0 z-20 border-b bg-white/90 backdrop-blur" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+            {/* ===== TOPBAR ===== */}
+            <header className="sticky top-0 z-20 border-b bg-white/90 backdrop-blur" style={{ borderColor: "#0123401a" }}>
                 <div className="flex h-16 w-full items-center justify-between px-4 sm:px-6">
-                    {/* Esquerda */}
+                    {/* ===== TOPBAR: ESQUERDA ===== */}
                     <div className="flex items-center gap-3">
                         <button
                             type="button"
                             onClick={handleToggleSidebar}
-                            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border bg-white transition hover:shadow-sm focus:outline-none focus:ring-2"
-                            style={{ borderColor: "rgba(1,35,64,0.15)", color: COLORS.base }}
+                            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border bg-white transition hover:shadow-sm 
+                                        focus:outline-none focus:ring-2 cursor-pointer"
+                            style={{ borderColor: "#01234026", color: COLORS.base }}
                             aria-label={sidebarOpen ? "Fechar menu lateral" : "Abrir menu lateral"}
                             title={sidebarOpen ? "Fechar menu" : "Abrir menu"}
                         >
@@ -512,32 +573,25 @@ export default function Dashboard() {
                             </svg>
                         </button>
 
-                        <Link to="/dashboard-admin" className="flex items-center gap-2">
-                            <div
-                                className="flex h-9 w-9 items-center justify-center rounded-xl font-extrabold shadow-sm"
-                                style={{ backgroundColor: COLORS.base, color: COLORS.lightGreen }}
-                                aria-label="A Abigail"
-                                title="A Abigail"
-                            >
-                                A
+                        <div className="flex items-center gap-2 group cursor-default">
+                            <div className="w-9 h-9 bg-[#012340] rounded-lg flex items-center justify-center transition-transform duration-300 group-hover:rotate-12">
+                                <span className="text-white font-bold italic">A</span>
                             </div>
-                            <div className="leading-tight">
-                                <p className="text-sm font-semibold" style={{ color: COLORS.base }}>
-                                    A Abigail
-                                </p>
-                                <p className="text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
-                                    Dashboard
-                                </p>
-                            </div>
-                        </Link>
+
+                            <span className="text-2xl font-black tracking-tighter text-[#012340] transition-colors duration-300 group-hover:text-[#45C4B0]">
+                                Abgail
+                            </span>
+                        </div>
+
                     </div>
 
-                    {/* Direita */}
+                    {/* ===== TOPBAR: DIREITA ===== */}
                     <div className="flex items-center gap-3">
                         <button
                             type="button"
-                            className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border bg-white transition hover:shadow-sm focus:outline-none focus:ring-2"
-                            style={{ borderColor: "rgba(1,35,64,0.15)", color: COLORS.base }}
+                            className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border bg-white transition hover:shadow-sm 
+                                        focus:outline-none focus:ring-2 cursor-pointer"
+                            style={{ borderColor: "#01234026", color: COLORS.base }}
                             aria-label="Notificações"
                             title="Notificações"
                         >
@@ -558,7 +612,7 @@ export default function Dashboard() {
                                 <p className="text-sm font-semibold" style={{ color: COLORS.base }}>
                                     {usuario.nome || "Usuário"}
                                 </p>
-                                <p className="text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                <p className="text-xs" style={{ color: "#012340a6" }}>
                                     {roleLabel}
                                 </p>
                             </div>
@@ -572,22 +626,24 @@ export default function Dashboard() {
                 </div>
             </header>
 
-            {/* Conteúdo: empurra no desktop */}
+            {/* ===== CONTEÚDO (EMPURRA NO DESKTOP) ===== */}
             <div className={classNames("transition-[margin-left] duration-300", sidebarOpen ? "sm:ml-64" : "sm:ml-0")}>
                 <main className="w-full px-4 py-6 sm:px-6">
-                    <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    {/* ===== CABEÇALHO DA PÁGINA + CTA ===== */}
+                    <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                         <div>
                             <h1 className="text-xl font-bold" style={{ color: COLORS.base }}>
                                 Dashboard
                             </h1>
-                            <p className="text-sm" style={{ color: "rgba(1,35,64,0.65)" }}>
+                            <p className="text-sm" style={{ color: "#012340a6" }}>
                                 Visão geral do dia e próximos atendimentos.
                             </p>
                         </div>
 
                         <button
                             type="button"
-                            className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold shadow-sm transition hover:shadow-md focus:outline-none focus:ring-2"
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold shadow-sm transition 
+                                        hover:shadow-md focus:outline-none focus:ring-2 cursor-pointer"
                             style={{ backgroundColor: COLORS.mid, color: "white" }}
                             aria-label="Novo Atendimento"
                             title="Novo Atendimento"
@@ -601,24 +657,24 @@ export default function Dashboard() {
                         </button>
                     </div>
 
-                    {/* Stat cards */}
+                    {/* ===== CARDS DE ESTATÍSTICAS ===== */}
                     <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                         {statCards.map((card) => (
                             <div
                                 key={card.key}
                                 className="rounded-2xl border bg-white p-4 shadow-sm transition hover:shadow-md"
-                                style={{ borderColor: "rgba(1,35,64,0.10)" }}
+                                style={{ borderColor: "#0123401a" }}
                             >
                                 <div className="flex items-start justify-between gap-3">
                                     <div>
-                                        <p className="text-sm font-semibold" style={{ color: "rgba(1,35,64,0.75)" }}>
+                                        <p className="text-sm font-semibold" style={{ color: "#012340bf" }}>
                                             {card.title}
                                         </p>
                                         <p className="mt-2 text-2xl font-extrabold" style={{ color: COLORS.base }}>
                                             {card.value}
                                         </p>
                                         {card.note ? (
-                                            <p className="mt-1 text-xs" style={{ color: "rgba(1,35,64,0.60)" }}>
+                                            <p className="mt-1 text-xs" style={{ color: "#01234099" }}>
                                                 {card.note}
                                             </p>
                                         ) : null}
@@ -627,8 +683,8 @@ export default function Dashboard() {
                                     <div
                                         className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border"
                                         style={{
-                                            backgroundColor: "rgba(1,35,64,0.03)",
-                                            borderColor: "rgba(1,35,64,0.10)",
+                                            backgroundColor: "#01234008",
+                                            borderColor: "#0123401a",
                                             color: card.accent,
                                         }}
                                         aria-hidden="true"
@@ -644,16 +700,16 @@ export default function Dashboard() {
                         ))}
                     </section>
 
-                    {/* Main grid */}
+                    {/* ===== GRID PRINCIPAL ===== */}
                     <section className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
-                        {/* Agenda */}
-                        <div className="rounded-2xl border bg-white p-4 shadow-sm xl:col-span-2" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+                        {/* ===== AGENDA (LISTA) ===== */}
+                        <div className="rounded-2xl border bg-white p-4 shadow-sm xl:col-span-2" style={{ borderColor: "#0123401a" }}>
                             <div className="mb-4 flex items-center justify-between gap-3">
                                 <div>
                                     <h2 className="text-base font-bold" style={{ color: COLORS.base }}>
                                         Agenda do dia
                                     </h2>
-                                    <p className="text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                    <p className="text-xs" style={{ color: "#012340a6" }}>
                                         Próximas consultas e status.
                                     </p>
                                 </div>
@@ -661,37 +717,55 @@ export default function Dashboard() {
                                 <div className="flex items-center gap-2">
                                     <button
                                         type="button"
-                                        className="rounded-xl border bg-white px-3 py-2 text-xs font-semibold transition hover:bg-slate-50"
-                                        style={{ borderColor: "rgba(1,35,64,0.12)", color: COLORS.base }}
+                                        onClick={() => setPeriodoAtivo("Dia")}
+                                        className="cursor-pointer rounded-xl border bg-white px-3 py-2 text-xs font-semibold transition hover:bg-slate-50"
+                                        style={{
+                                            borderColor: "#0123401f",
+                                            color: periodoAtivo === "Dia" ? COLORS.base : "#012340b3",
+                                            backgroundColor: periodoAtivo === "Dia" ? "#0123400d" : "white",
+                                        }}
                                     >
                                         Dia
                                     </button>
+
                                     <button
                                         type="button"
-                                        className="rounded-xl border bg-white px-3 py-2 text-xs font-semibold transition hover:bg-slate-50"
-                                        style={{ borderColor: "rgba(1,35,64,0.12)", color: "rgba(1,35,64,0.70)" }}
+                                        onClick={() => setPeriodoAtivo("Semana")}
+                                        className="cursor-pointer rounded-xl border bg-white px-3 py-2 text-xs font-semibold transition hover:bg-slate-50"
+                                        style={{
+                                            borderColor: "#0123401f",
+                                            color: periodoAtivo === "Semana" ? COLORS.base : "#012340b3",
+                                            backgroundColor: periodoAtivo === "Semana" ? "#0123400d" : "white",
+                                        }}
                                     >
                                         Semana
                                     </button>
+
                                     <button
                                         type="button"
-                                        className="hidden rounded-xl border bg-white px-3 py-2 text-xs font-semibold transition hover:bg-slate-50 sm:inline-flex"
-                                        style={{ borderColor: "rgba(1,35,64,0.12)", color: "rgba(1,35,64,0.70)" }}
+                                        onClick={() => setPeriodoAtivo("Mês")}
+                                        className="cursor-pointer hidden rounded-xl border bg-white px-3 py-2 text-xs font-semibold transition hover:bg-slate-50 sm:inline-flex"
+                                        style={{
+                                            borderColor: "#0123401f",
+                                            color: periodoAtivo === "Mês" ? COLORS.base : "#012340b3",
+                                            backgroundColor: periodoAtivo === "Mês" ? "#0123400d" : "white",
+                                        }}
                                     >
                                         Mês
                                     </button>
                                 </div>
+
                             </div>
 
-                            <div className="divide-y" style={{ borderColor: "rgba(1,35,64,0.08)" }}>
+                            <div className="divide-y" style={{ borderColor: "#01234014" }}>
                                 {agenda.map((item) => (
                                     <div key={item.id} className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
                                         <div className="flex items-center gap-3">
                                             <div
                                                 className="inline-flex h-10 w-14 items-center justify-center rounded-xl border text-sm font-bold"
                                                 style={{
-                                                    borderColor: "rgba(1,35,64,0.12)",
-                                                    backgroundColor: "rgba(1,35,64,0.03)",
+                                                    borderColor: "#0123401f",
+                                                    backgroundColor: "#01234008",
                                                     color: COLORS.base,
                                                 }}
                                             >
@@ -702,7 +776,7 @@ export default function Dashboard() {
                                                 <p className="truncate text-sm font-semibold" style={{ color: COLORS.base }}>
                                                     {item.patient}
                                                 </p>
-                                                <p className="text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                                <p className="text-xs" style={{ color: "#012340a6" }}>
                                                     {item.type}
                                                 </p>
                                             </div>
@@ -712,9 +786,10 @@ export default function Dashboard() {
                                             <StatusBadge status={item.status} />
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition hover:shadow-sm"
+                                                className="inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold 
+                                                            transition hover:shadow-sm cursor-pointer"
                                                 style={{
-                                                    borderColor: "rgba(1,35,64,0.14)",
+                                                    borderColor: "#01234024",
                                                     backgroundColor: "white",
                                                     color: item.status === "Em Atendimento" ? COLORS.mid : COLORS.base,
                                                 }}
@@ -738,13 +813,13 @@ export default function Dashboard() {
                             </div>
                         </div>
 
-                        {/* Atividades */}
-                        <div className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+                        {/* ===== ATIVIDADES RECENTES ===== */}
+                        <div className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: "#0123401a" }}>
                             <div className="mb-4">
                                 <h2 className="text-base font-bold" style={{ color: COLORS.base }}>
                                     Atividades recentes
                                 </h2>
-                                <p className="text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                                <p className="text-xs" style={{ color: "#012340a6" }}>
                                     Alertas e atualizações rápidas.
                                 </p>
                             </div>
@@ -756,7 +831,7 @@ export default function Dashboard() {
                                         <li
                                             key={a.id}
                                             className="rounded-2xl border p-3"
-                                            style={{ borderColor: "rgba(1,35,64,0.10)", backgroundColor: tone.bg }}
+                                            style={{ borderColor: "#0123401a", backgroundColor: tone.bg }}
                                         >
                                             <div className="flex items-start gap-3">
                                                 <div className="mt-1 h-2.5 w-2.5 rounded-full" style={{ backgroundColor: tone.dot }} aria-hidden="true" />
@@ -782,7 +857,8 @@ export default function Dashboard() {
                             <div className="mt-4">
                                 <button
                                     type="button"
-                                    className="w-full rounded-2xl px-4 py-2 text-sm font-semibold shadow-sm transition hover:shadow-md focus:outline-none focus:ring-2"
+                                    className="w-full rounded-2xl px-4 py-2 text-sm font-semibold shadow-sm transition hover:shadow-md 
+                                                focus:outline-none focus:ring-2 cursor-pointer"
                                     style={{ backgroundColor: COLORS.aqua, color: COLORS.base }}
                                 >
                                     Ver todas as notificações
@@ -791,13 +867,14 @@ export default function Dashboard() {
                         </div>
                     </section>
 
-                    {/* Bottom strip */}
+                    {/* ===== ÁREA INFERIOR ===== */}
                     <section className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
-                        <div className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+                        {/* ===== ATALHOS RÁPIDOS ===== */}
+                        <div className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: "#0123401a" }}>
                             <h3 className="text-sm font-bold" style={{ color: COLORS.base }}>
                                 Atalhos rápidos
                             </h3>
-                            <p className="mt-1 text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                            <p className="mt-1 text-xs" style={{ color: "#012340a6" }}>
                                 Ações comuns do dia a dia.
                             </p>
 
@@ -806,12 +883,13 @@ export default function Dashboard() {
                                     <button
                                         key={b.key}
                                         type="button"
-                                        className="flex items-center gap-3 rounded-2xl border bg-white px-4 py-3 text-left text-sm font-semibold transition hover:bg-slate-50 hover:shadow-sm"
-                                        style={{ borderColor: "rgba(1,35,64,0.12)", color: COLORS.base }}
+                                        className="flex items-center gap-3 rounded-2xl border bg-white px-4 py-3 text-left text-sm font-semibold transition 
+                                                    hover:bg-slate-50 hover:shadow-sm cursor-pointer"
+                                        style={{ borderColor: "#0123401f", color: COLORS.base }}
                                     >
                                         <span
                                             className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border text-base"
-                                            style={{ borderColor: "rgba(1,35,64,0.10)", backgroundColor: "rgba(154,235,163,0.18)" }}
+                                            style={{ borderColor: "#0123401a", backgroundColor: "#9aeba32e" }}
                                             aria-hidden="true"
                                         >
                                             {b.icon}
@@ -822,19 +900,20 @@ export default function Dashboard() {
                             </div>
                         </div>
 
-                        <div className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+                        {/* ===== RESUMO OPERACIONAL ===== */}
+                        <div className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: "#0123401a" }}>
                             <h3 className="text-sm font-bold" style={{ color: COLORS.base }}>
                                 Resumo operacional
                             </h3>
-                            <p className="mt-1 text-xs" style={{ color: "rgba(1,35,64,0.65)" }}>
+                            <p className="mt-1 text-xs" style={{ color: "#012340a6" }}>
                                 Indicadores simples para decisão rápida.
                             </p>
 
                             <div className="mt-4 space-y-3">
                                 {kpis.map((kpi) => (
-                                    <div key={kpi.key} className="rounded-2xl border p-3" style={{ borderColor: "rgba(1,35,64,0.10)" }}>
+                                    <div key={kpi.key} className="rounded-2xl border p-3" style={{ borderColor: "#0123401a" }}>
                                         <div className="flex items-center justify-between gap-3">
-                                            <p className="text-sm font-semibold" style={{ color: "rgba(1,35,64,0.80)" }}>
+                                            <p className="text-sm font-semibold" style={{ color: "#012340cc" }}>
                                                 {kpi.label}
                                             </p>
                                             <p className="text-sm font-bold" style={{ color: COLORS.base }}>
@@ -850,8 +929,9 @@ export default function Dashboard() {
                         </div>
                     </section>
 
-                    <footer className="mt-8 pb-8 text-center text-xs" style={{ color: "rgba(1,35,64,0.55)" }}>
-                        © {new Date().getFullYear()} A Abigail • Dashboard interno
+                    {/* ===== RODAPÉ INTERNO DO DASHBOARD ===== */}
+                    <footer className="mt-8 pb-8 text-center text-sm" style={{ color: "#0123408c" }}>
+                        © {new Date().getFullYear()} Abgail • Dashboard interno
                     </footer>
                 </main>
             </div>
