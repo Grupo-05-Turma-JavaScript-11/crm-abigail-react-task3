@@ -1,21 +1,22 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Sobre from "./pages/sobre/Sobre";
+import Feature from "./pages/funcionalidades/Feature";
+import Home from "./pages/home/Home";
+import Footer from "./components/footer/Footer";
+import Login from "./pages/login/Login";
+import Cadastro from "./pages/cadastro/Cadastro";
+import { AuthProvider } from "./contexts/AuthContext";
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Navbar from './components/navbar/Navbar';
-import Sobre from './pages/sobre/Sobre';
-import Feature from './pages/funcionalidades/Feature';
-import Home from './pages/home/Home';
-import Footer from './components/footer/Footer';
-import Login from './pages/login/Login';
-import Cadastro from './pages/cadastro/Cadastro';
-import { AuthProvider } from './contexts/AuthContext';
-
-import { Navigate } from 'react-router-dom';
-import { useContext, type ReactNode } from 'react';
-import { AuthContext } from './contexts/AuthContext';
+import { Navigate } from "react-router-dom";
+import { useContext, type ReactNode } from "react";
+import { AuthContext } from "./contexts/AuthContext";
+import Atendimentos from "./pages/dashboard/atendimento/atendimento";
+import Navbar from "./components/navbar/Navbar";
+import Dashboard from "./pages/dashboard/Dashboard";
 
 // Componente para proteger rotas
 interface ProtectedRouteProps {
-  children: ReactNode
+  children: ReactNode;
   allowedRoles?: string[]; // Tipos permitidos (ex: ['admin', 'medico'])
 }
 
@@ -40,27 +41,18 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Navbar />
-          <Routes>
-            {/* --- PÚBLICAS --- */}
-            <Route path="/" element={<Home />} />
-            <Route path="/usuarios/login" element={<Login />} />
-            <Route path="/usuarios/cadastrar" element={<Cadastro />} />
-            <Route path="/sobre" element={<Sobre />} />
+        <Routes>
+          {/* --- PÚBLICAS --- */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/cadastrar" element={<Cadastro />} />
+          <Route path="/sobre" element={<Sobre />} />
+          <Route path="/funcionalidades" element={<Feature />} />
 
-            {/* --- TODOS OS LOGADOS = EXEMPLOOO --- */}
-            <Route path="/funcionalidades" element={ // não ta logado? Sai! vai logar!
-              <ProtectedRoute>
-                <Feature />
-              </ProtectedRoute>
-            } />
+          <Route path="/atendimento" element={<Atendimentos />} />
+          <Route path="/dashboard" element={<Dashboard />} />
 
-            {/* --- ROTAS EXCLUSIVAS: MÉDICO E ADMIN ---
-            <Route path="/atendimento" element={
-              <ProtectedRoute allowedRoles={['medico', 'admin']}>
-                <Atendimento /> 
-              </ProtectedRoute>
-            } />
-
+          {/* 
             --- ROTAS EXCLUSIVAS: ASSISTENTE E ADMIN ---
             <Route path="/agendamentos" element={
               <ProtectedRoute allowedRoles={['assistente', 'admin']}>
@@ -74,8 +66,7 @@ export default function App() {
                 <PainelAdmin />
               </ProtectedRoute>
             } /> */}
-
-          </Routes>
+        </Routes>
         <Footer />
       </BrowserRouter>
     </AuthProvider>

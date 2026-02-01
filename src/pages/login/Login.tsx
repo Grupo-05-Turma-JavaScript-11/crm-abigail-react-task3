@@ -23,7 +23,7 @@ function Login() {
             // Lógica de redirecionamento baseada no tipo
             switch (usuario.tipo) {
                 case 'ADMIN':
-                    navigate('/dashboard-admin');
+                    navigate('/dashboard');
                     break;
                 case 'MEDICO':
                     navigate('/agenda-medica');

@@ -182,50 +182,50 @@ export default function Dashboard() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const isLoggedIn = usuario.token !== "";
+    // ===== BLOQUEIO (SEM TOKEN) =====
+    if (!usuario || usuario.token === "") {
+        return <Navigate to="/login" replace />;
+    }
 
+    
     // ===== SIDEBAR OFF-CANVAS (ABRE/FECHA) =====
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
-
+    
     // ===== ACESSIBILIDADE (FOCO NO SIDEBAR) =====
     const sidebarRef = useRef<HTMLElement | null>(null);
-
+    
     // ===== EFEITO: FECHA SIDEBAR AO MUDAR ROTA =====
     useEffect(() => {
         setSidebarOpen(false);
     }, [location.pathname]);
-
+    
     // ===== EFEITO: ESC FECHA + FOCO AO ABRIR =====
     useEffect(() => {
         function onKeyDown(e: KeyboardEvent) {
             if (e.key === "Escape") setSidebarOpen(false);
         }
         window.addEventListener("keydown", onKeyDown);
-
+        
         if (sidebarOpen) sidebarRef.current?.focus?.();
-
+        
         return () => window.removeEventListener("keydown", onKeyDown);
     }, [sidebarOpen]);
-
+    
     // ===== HANDLERS (SIDEBAR / LOGOUT) =====
     const handleToggleSidebar = () => setSidebarOpen((v) => !v);
     const handleCloseSidebar = () => setSidebarOpen(false);
-
+    
     const onLogout = () => {
         handleLogout();
         navigate("/login", { replace: true });
     };
-
-    // ===== BLOQUEIO (SEM TOKEN) =====
-    if (!isLoggedIn) {
-        return <Navigate to="/login" replace />;
-    }
-
+    
+    
     // ===== LABEL DE PERFIL (TIPO DO USUÁRIO) =====
     const roleLabel = useMemo(() => {
-        if (usuario.tipo === "admin") return "Administrador(a)";
-        if (usuario.tipo === "medico") return "Médico(a)";
-        if (usuario.tipo === "assistente") return "Assistente";
+        if (usuario.tipo === "ADMIN") return "Administrador(a)";
+        if (usuario.tipo === "MEDICO") return "Médico(a)";
+        if (usuario.tipo === "ASSISTENTE") return "Assistente";
         return "Usuário";
     }, [usuario.tipo]);
 
