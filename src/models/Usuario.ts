@@ -1,12 +1,12 @@
-export type Tipo = 'admin' | 'medico' | 'assistente' 
+export type Tipo = 'ADMIN' | 'MEDICO' | 'ASSSISTENTE' | ''
 
 export interface Usuario {
   id: number;
   nome: string;
   email: string;
-  foto?: string;
   senha: string;
   crm?: string;
+  foto?: string;
   tipo: Tipo
 //   atendimento: Atendimento[] | null
 }

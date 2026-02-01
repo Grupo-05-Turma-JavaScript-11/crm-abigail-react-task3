@@ -14,7 +14,7 @@ function Login() {
         email: '',
         senha: '',
         crm: '',
-        tipo: '',
+        tipo: 'MEDICO',
         token: ''
     }) 
 
@@ -22,13 +22,13 @@ function Login() {
         if (usuario.token !== "") {
             // Lógica de redirecionamento baseada no tipo
             switch (usuario.tipo) {
-                case 'admin':
+                case 'ADMIN':
                     navigate('/dashboard-admin');
                     break;
-                case 'medico':
+                case 'MEDICO':
                     navigate('/agenda-medica');
                     break;
-                case 'assistente':
+                case 'ASSSISTENTE':
                     navigate('/recepcao');
                     break;
                 default:

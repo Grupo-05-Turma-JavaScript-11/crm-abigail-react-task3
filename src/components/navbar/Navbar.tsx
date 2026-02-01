@@ -52,7 +52,7 @@ function Navbar() {
                         </Link>
 
                         {/* Visível para Médico e Admin */}
-                        {(usuario.tipo === 'medico' || usuario.tipo === 'admin') && (
+                        {(usuario.tipo === 'MEDICO' || usuario.tipo === 'ADMIN') && (
                             <Link to="/funcionalidades">
                                 <div className='relative font-bold text-sm group transition-colors hover:text-[#45C4B0] cursor-pointer'>
                                     FUNCIONALIDADES

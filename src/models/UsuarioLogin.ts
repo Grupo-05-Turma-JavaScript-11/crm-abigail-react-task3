@@ -5,7 +5,7 @@ export default interface UsuarioLogin {
   nome: string;
   email: string;
   senha: string;
-  crm: string;
+  crm?: string;
   foto?: string;
   tipo: Tipo;
   token: string;
