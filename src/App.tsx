@@ -37,7 +37,7 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
 
 export default function App() {
   return (
-    <AuthProvider>
+    // <AuthProvider>
       <BrowserRouter>
         <Navbar />
           <Routes>
@@ -78,6 +78,6 @@ export default function App() {
           </Routes>
         <Footer />
       </BrowserRouter>
-    </AuthProvider>
+    // </AuthProvider>
   );
 }
