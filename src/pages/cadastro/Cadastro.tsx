@@ -14,6 +14,8 @@ function Cadastro() {
     nome: "",
     email: "",
     senha: "",
+    crm: "",
+    foto: "",
     tipo: "", // Começa vazio para forçar a seleção
   });
 
