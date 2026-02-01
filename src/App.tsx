@@ -12,6 +12,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { useContext, type ReactNode } from 'react';
 import { AuthContext } from './contexts/AuthContext';
+import Atendimentos from './pages/dashboard/atendimento/Atendimento';
 
 // Componente para proteger rotas
 interface ProtectedRouteProps {
@@ -54,13 +55,12 @@ export default function App() {
               </ProtectedRoute>
             } />
 
-            {/* --- ROTAS EXCLUSIVAS: MÉDICO E ADMIN ---
-            <Route path="/atendimento" element={
-              <ProtectedRoute allowedRoles={['medico', 'admin']}>
-                <Atendimento /> 
-              </ProtectedRoute>
-            } />
 
+            <Route path="/atendimento" element={
+                <Atendimentos /> 
+            } />
+            
+            {/* 
             --- ROTAS EXCLUSIVAS: ASSISTENTE E ADMIN ---
             <Route path="/agendamentos" element={
               <ProtectedRoute allowedRoles={['assistente', 'admin']}>

@@ -8,18 +8,18 @@ function Navbar() {
     const location = useLocation(); // Captura a rota atual
 
     // Extraído o 'usuario' para verificar o 'tipo' e 'token'
-    const { usuario, handleLogout } = useContext(AuthContext) 
+    // const { usuario, handleLogout } = useContext(AuthContext) 
 
-    function logout() {
-        handleLogout()
-        alert("O Usuário foi desconectado com sucesso!")
-        navigate('/')
-    }
+    // function logout() {
+    //     handleLogout()
+    //     alert("O Usuário foi desconectado com sucesso!")
+    //     navigate('/')
+    // }
 
     // Lógica para esconder a Navbar se estiver em '/login' ou '/cadastro'
-    if (location.pathname === '/login' || location.pathname === '/cadastro') {
-        return null; 
-    }
+    // if (location.pathname === '/login' || location.pathname === '/cadastro') {
+    //     return null; 
+    // }
 
     return (
             <div className='w-full flex justify-center py-4 bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm'> 
@@ -52,17 +52,16 @@ function Navbar() {
                         </Link>
 
                         {/* Visível para Médico e Admin */}
-                        {(usuario.tipo === 'medico' || usuario.tipo === 'admin') && (
                             <Link to="/funcionalidades">
                                 <div className='relative font-bold text-sm group transition-colors hover:text-[#45C4B0] cursor-pointer'>
                                     FUNCIONALIDADES
                                     <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#45C4B0] transition-all duration-300 group-hover:w-full"></span>
                                 </div>
                             </Link>
-                        )}
+
 
                         {/* Se NÃO estiver logado, mostra Login e Cadastro */}
-                        {usuario.token === "" ? (
+                       {/* {usuario.token === "" ? (*/}
                             <>
                                 <Link to="/login">
                                     <div className='font-bold text-sm hover:text-[#45C4B0] transition-colors px-4 cursor-pointer'>
@@ -77,12 +76,12 @@ function Navbar() {
                                     </div>
                                 </Link>
                             </>
-                        ) : (
-                            /* Se ESTIVER logado, mostra o botão Sair */
+                      {/* 
+                             Se ESTIVER logado, mostra o botão Sair 
                             <Link to='' onClick={logout} className="rounded-xl text-[#012340] border border-[#012340] hover:bg-red-500/10 hover:border-red-500 px-4 py-2 text-sm font-bold transition-all duration-300 hover:underline">
                                 SAIR
                             </Link>
-                        )}
+                        */}
                     </div>
                 </div>
 
