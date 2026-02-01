@@ -20,20 +20,7 @@ function Login() {
 
     useEffect(() => {
         if (usuario.token !== "") {
-            // Lógica de redirecionamento baseada no tipo
-            switch (usuario.tipo) {
-                case 'ADMIN':
-                    navigate('/dashboard');
-                    break;
-                case 'MEDICO':
-                    navigate('/agenda-medica');
-                    break;
-                case 'ASSISTENTE':
-                    navigate('/recepcao');
-                    break;
-                default:
-                    navigate('/home'); // Caso padrão
-            }
+                    navigate('/home'); 
         }
     }, [usuario, navigate]); // navigate é usado por boa prática
 
