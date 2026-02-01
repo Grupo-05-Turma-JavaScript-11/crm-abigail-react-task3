@@ -1,53 +1,51 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Search, Plus } from "lucide-react";
 import AtendimentoCard from "../../../components/atendimentos/cardAtendimentos/AtendimentoCard";
 import type Atendimento from "../../../models/Atendimento";
+import AtendimentoForm from "../../../components/atendimentos/formAtendimentos/AtendimentoForm";
+import axios from "axios";
 
 // Tipagem básica
 
 const Atendimentos = () => {
-  const [showModal, setShowModal] = useState(false);
+
   const [filtroNome, setFiltroNome] = useState("");
   const [filtroStatus, setFiltroStatus] = useState("Todos");
+  const [showModal, setShowModal] = useState(false);
 
-  const proximoStatus = (id: number) => {
-    const ordem: Atendimento["status"][] = [
-      "Agendado",
-      "Em Tratamento",
-      "Finalizado",
-    ];
+  const [atendimentos, setAtendimentos] = useState<Atendimento[]>([]);
 
-    setAtendimentos((prev) =>
-      prev.map((atend) => {
-        if (atend.id === id) {
-          const indexAtual = ordem.indexOf(atend.status);
-          const novoStatus =
-            indexAtual === -1 || indexAtual === ordem.length - 1
-              ? "Agendado"
-              : ordem[indexAtual + 1];
-
-          return { ...atend, status: novoStatus };
-        }
-        return atend;
-      })
-    );
+  // Função para buscar dados do backend
+  const fetchAtendimentos = async () => {
+    try {
+      const response = await axios.get('/api/atendimentos');
+      setAtendimentos(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar atendimentos", error);
+    }
   };
 
-  // Exemplo de estado inicial
-  const [atendimentos, setAtendimentos] = useState<Atendimento[]>([
-    {
-      id: 1,
-      motivo: "Check-up Geral",
-      status: "Agendado",
-      dataHora: "2024-05-20T14:00",
-      formaPagamento: "Particular",
-      observacao: "Paciente em jejum",
-      paciente: null,
-      medico: null,
-      idMedico: 1,
-      pacientenome: "Joao",
-    },
-  ]);
+  useEffect(() => {
+    fetchAtendimentos();
+  }, []);
+
+  const handleSalvarAtendimento = (dados: any) => {
+    // Aqui você faria a chamada para sua API
+    console.log("Salvando:", dados);
+    setShowModal(false);
+  };
+  const proximoStatus = async (id: number, statusAtual: string) => {
+    const ordem = ["Agendado", "Em Tratamento", "Finalizado"];
+    const novoStatus = ordem[ordem.indexOf(statusAtual) + 1] || "Agendado";
+
+    try {
+      await axios.patch(`/api/atendimentos/${id}`, { status: novoStatus });
+      fetchAtendimentos(); // Recarrega a lista
+    } catch (error) {
+      alert("Erro ao atualizar status");
+    }
+  };
+
 
   const [meusFiltros, setMeusFiltros] = useState(false);
   const medicoLogadoId = 123;
@@ -128,63 +126,16 @@ const Atendimentos = () => {
             <AtendimentoCard
               key={atend.id}
               atendimento={atend}
-              onChangeStatus={proximoStatus}
+              onChangeStatus={() => proximoStatus(atend.id, atend.status)}
             />
           ))}
       </div>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-          <div className="bg-white w-full max-w-lg rounded-2xl p-6 shadow-2xl">
-            <h2 className="text-xl font-bold mb-4 text-[#012340]">
-              Novo Atendimento
-            </h2>
-            <form className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="datetime-local"
-                  className="border p-2 rounded w-full border-[#9AEBA3]"
-                />
-                <select className="border p-2 rounded w-full border-[#9AEBA3]">
-                  <option>Particular</option>
-                  <option>Convênio</option>
-                </select>
-              </div>
-              {/* Aqui entrariam os inputs de Autocomplete para Médico e Paciente */}
-              <input
-                type="text"
-                placeholder="Pesquisar Médico..."
-                className="border p-2 rounded w-full border-[#9AEBA3]"
-              />
-              <input
-                type="text"
-                placeholder="Pesquisar Paciente..."
-                className="border p-2 rounded w-full border-[#9AEBA3]"
-              />
-              <textarea
-                placeholder="Observações"
-                className="border p-2 rounded w-full h-24 border-[#9AEBA3]"
-              />
-
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="bg-[#45C4B0] text-white px-6 py-2 rounded-lg font-bold"
-                >
-                  Criar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <AtendimentoForm
+        isOpen={showModal} 
+        onClose={() => setShowModal(false)}
+        onRefresh={fetchAtendimentos} // Passa a função de refresh
+      />
     </div>
   );
 };

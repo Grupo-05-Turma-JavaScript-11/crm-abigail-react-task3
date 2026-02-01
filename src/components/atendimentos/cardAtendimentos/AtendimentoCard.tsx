@@ -3,7 +3,7 @@ import type Atendimento from "../../../models/Atendimento";
 
 interface AtendimentoCardProps {
   atendimento: Atendimento;
-  onChangeStatus: (id: number) => void;
+  onChangeStatus: (id: number, statusAtual: string) => Promise<void> | void;
 }
 
 function AtendimentoCard({ atendimento, onChangeStatus }: AtendimentoCardProps) {
@@ -40,7 +40,7 @@ function AtendimentoCard({ atendimento, onChangeStatus }: AtendimentoCardProps) 
         </div>
 
         <button
-          onClick={() => onChangeStatus(atendimento.id)}
+          onClick={() => onChangeStatus(atendimento.id, atendimento.status)}
           className={`w-full py-2 rounded-lg text-sm font-bold transition-colors mb-0 ${
             atendimento.status === "Agendado"
               ? "bg-[#F8FAFC] text-[#025959] border border-[#9AEBA3]"
