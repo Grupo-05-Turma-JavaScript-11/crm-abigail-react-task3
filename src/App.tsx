@@ -44,7 +44,7 @@ export default function App() {
             {/* --- PÚBLICAS --- */}
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/cadastro" element={<Cadastro />} />
+            <Route path="/cadastrar" element={<Cadastro />} />
             <Route path="/sobre" element={<Sobre />} />
 
             {/* --- TODOS OS LOGADOS = EXEMPLOOO --- */}

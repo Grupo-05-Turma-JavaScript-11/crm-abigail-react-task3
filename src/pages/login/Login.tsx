@@ -13,9 +13,9 @@ function Login() {
         nome: '',
         email: '',
         senha: '',
-        foto: '',
-        token: '',
-        tipo: ''
+        crm: '',
+        tipo: '',
+        token: ''
     }) 
 
     useEffect(() => {
@@ -121,7 +121,7 @@ function Login() {
 
                         <p className="text-center text-white/80 text-sm">
                             Ainda não tem uma conta?{' '}
-                            <Link to="/cadastro" className="text-[#9AEBA3] font-bold hover:text-[#45C4B0] underline decoration-[#45C4B0] transition-colors">
+                            <Link to="/cadastrar" className="text-[#9AEBA3] font-bold hover:text-[#45C4B0] underline decoration-[#45C4B0] transition-colors">
                                 Cadastre-se
                             </Link>
                         </p>

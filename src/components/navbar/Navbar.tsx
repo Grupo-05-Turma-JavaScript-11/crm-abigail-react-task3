@@ -16,8 +16,8 @@ function Navbar() {
         navigate('/')
     }
 
-    // Lógica para esconder a Navbar se estiver em '/login' ou '/cadastro'
-    if (location.pathname === '/login' || location.pathname === '/cadastro') {
+    // Lógica para esconder a Navbar se estiver em '/login' ou '/cadastrar'
+    if (location.pathname === '/login' || location.pathname === '/cadastrar') {
         return null; 
     }
 
@@ -62,7 +62,7 @@ function Navbar() {
                         )}
 
                         {/* Se NÃO estiver logado, mostra Login e Cadastro */}
-                        {usuario.token === "" ? (
+
                             <>
                                 <Link to="/login">
                                     <div className='font-bold text-sm hover:text-[#45C4B0] transition-colors px-4 cursor-pointer'>
@@ -70,19 +70,13 @@ function Navbar() {
                                     </div>
                                 </Link>
 
-                                <Link to="/cadastro">
+                                <Link to="/cadastrar">
                                     <div className='relative overflow-hidden bg-[#45C4B0] text-[#012340] text-sm font-bold px-6 py-2 rounded-full hover:bg-[#9AEBA3] transition-all shadow-md active:scale-95 group cursor-pointer'>
                                         <span className="relative z-10">CADASTRO</span>
                                         <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-40 group-hover:animate-[shine_1s_ease-in-out]" />
                                     </div>
                                 </Link>
                             </>
-                        ) : (
-                            /* Se ESTIVER logado, mostra o botão Sair */
-                            <Link to='' onClick={logout} className="rounded-xl text-[#012340] border border-[#012340] hover:bg-red-500/10 hover:border-red-500 px-4 py-2 text-sm font-bold transition-all duration-300 hover:underline">
-                                SAIR
-                            </Link>
-                        )}
                     </div>
                 </div>
 
