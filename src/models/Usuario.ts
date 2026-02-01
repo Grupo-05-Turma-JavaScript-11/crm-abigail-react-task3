@@ -1,4 +1,4 @@
-export type Tipo = 'ADMIN' | 'MEDICO' | 'ASSSISTENTE' | ''
+export type Tipo = 'ADMIN' | 'MEDICO' | 'ASSISTENTE' | ''
 
 export interface Usuario {
   id: number;

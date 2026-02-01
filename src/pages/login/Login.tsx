@@ -28,7 +28,7 @@ function Login() {
                 case 'MEDICO':
                     navigate('/agenda-medica');
                     break;
-                case 'ASSSISTENTE':
+                case 'ASSISTENTE':
                     navigate('/recepcao');
                     break;
                 default:
