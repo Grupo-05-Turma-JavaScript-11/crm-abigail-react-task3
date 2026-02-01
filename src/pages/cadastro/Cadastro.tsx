@@ -44,20 +44,33 @@ function Cadastro() {
     e.preventDefault();
 
     if (confirmarSenha === usuario.senha && usuario.senha.length >= 8) {
-      setIsLoading(true);
-      try {
-        await cadastrarUsuario(`/usuarios/cadastrar`, usuario, setUsuario);
-        alert("Usuário cadastrado com sucesso!");
-      } catch (error) {
-        alert("Erro ao cadastrar o usuário! Verifique as informações fornecidas.");
-      }
+        setIsLoading(true);
+        try {
+            // 1. Criamos um objeto de limpeza
+            // Removemos o ID (que é 0) e campos que estão vazios
+            const dadosParaEnviar = {
+                nome: usuario.nome,
+                email: usuario.email,
+                senha: usuario.senha,
+                tipo: usuario.tipo,
+                // Só enviamos CRM e Foto se eles não estiverem vazios
+                ...(usuario.crm.trim() !== "" && { crm: usuario.crm }),
+                ...(usuario.foto?.trim() !== "" && { foto: usuario.foto }),
+            };
+
+            await cadastrarUsuario(`/usuarios/cadastrar`, dadosParaEnviar, setUsuario);
+            alert("Usuário cadastrado com sucesso!");
+        } catch (error) {
+            // DICA: Se o erro for 400, o 'error' geralmente contém o que falhou
+            alert("Erro 400: Verifique se o e-mail já existe ou se os campos estão corretos.");
+        }
     } else {
-      alert("As senhas não conferem ou são muito curtas.");
-      setUsuario({ ...usuario, senha: "" });
-      setConfirmarSenha("");
+        alert("As senhas não conferem ou são muito curtas.");
+        setUsuario({ ...usuario, senha: "" });
+        setConfirmarSenha("");
     }
     setIsLoading(false);
-  }
+}
 
   // Validação: Verifica se todos os campos obrigatórios estão preenchidos corretamente
   const isFormInvalid =
