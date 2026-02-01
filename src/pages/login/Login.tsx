@@ -20,7 +20,7 @@ function Login() {
 
     useEffect(() => {
         if (usuario.token !== "") {
-                    navigate('/home'); 
+                    navigate('/dashboard'); 
         }
     }, [usuario, navigate]); // navigate é usado por boa prática
 
