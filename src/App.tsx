@@ -1,12 +1,12 @@
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Navbar from './components/navbar/Navbar';
-import Sobre from './pages/sobre/Sobre';
-import Feature from './pages/funcionalidades/Feature';
-import Home from './pages/home/Home';
-import Footer from './components/footer/Footer';
-import Login from './pages/login/Login';
-import Cadastro from './pages/cadastro/Cadastro';
+import Navbar from './components/public/navbar/Navbar';
+import Sobre from './pages/landing/sobre/Sobre';
+import Feature from './pages/landing/funcionalidades/Feature';
+import Home from './pages/landing/home/Home';
+import Footer from './components/common/footer/Footer';
+import Login from './pages/auth/login/Login';
+import Cadastro from './pages/auth/cadastro/Cadastro';
 import { AuthProvider } from './contexts/AuthContext';
 
 import { Navigate } from 'react-router-dom';
@@ -44,7 +44,7 @@ export default function App() {
             {/* --- PÚBLICAS --- */}
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/cadastro" element={<Cadastro />} />
+            <Route path="/cadastrar" element={<Cadastro />} />
             <Route path="/sobre" element={<Sobre />} />
 
             {/* --- TODOS OS LOGADOS = EXEMPLOOO --- */}

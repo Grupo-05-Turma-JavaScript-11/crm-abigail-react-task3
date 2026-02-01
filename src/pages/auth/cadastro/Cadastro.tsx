@@ -1,8 +1,8 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
 import { ClipLoader } from "react-spinners"
-import { cadastrarUsuario } from "../../services/Service"
-import type { Usuario } from "../../models/Usuario"
+import { cadastrarUsuario } from "../../../services/Service"
+import type { Usuario } from "../../../models/Usuario"
 
 function Cadastro() {
   const navigate = useNavigate()
@@ -13,9 +13,9 @@ function Cadastro() {
     id: 0,
     nome: '',
     email: '',
-    foto: '',
     senha: '',
-    tipo: ''
+    foto: '',
+    tipo: 'MEDICO'
   })
 
   useEffect(() => {
@@ -125,9 +125,9 @@ function Cadastro() {
                 onChange={atualizarEstado}
             >
                 <option value="" disabled>Selecione uma opção</option>
-                <option value="admin" className="text-black">Administrador</option>
-                <option value="medico" className="text-black">Médico</option>
-                <option value="assistente" className="text-black">Assistente</option>
+                <option value="ADMIN" className="text-black">Administrador</option>
+                <option value="MEDICO" className="text-black">Médico</option>
+                <option value="ASSISTENTE" className="text-black">Assistente</option>
             </select>
             </div>
 

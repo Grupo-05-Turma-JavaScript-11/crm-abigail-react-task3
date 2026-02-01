@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom"; // Importado useLocation
-import { AuthContext } from "../../contexts/AuthContext";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 function Navbar() {
 
@@ -17,7 +17,7 @@ function Navbar() {
     }
 
     // Lógica para esconder a Navbar se estiver em '/login' ou '/cadastro'
-    if (location.pathname === '/login' || location.pathname === '/cadastro') {
+    if (location.pathname === '/login' || location.pathname === '/cadastrar') {
         return null; 
     }
 
@@ -52,7 +52,7 @@ function Navbar() {
                         </Link>
 
                         {/* Visível para Médico e Admin */}
-                        {(usuario.tipo === 'medico' || usuario.tipo === 'admin') && (
+                        {(usuario.tipo === 'MEDICO' || usuario.tipo === 'ADMIN') && (
                             <Link to="/funcionalidades">
                                 <div className='relative font-bold text-sm group transition-colors hover:text-[#45C4B0] cursor-pointer'>
                                     FUNCIONALIDADES
@@ -70,7 +70,7 @@ function Navbar() {
                                     </div>
                                 </Link>
 
-                                <Link to="/cadastro">
+                                <Link to="/cadastrar">
                                     <div className='relative overflow-hidden bg-[#45C4B0] text-[#012340] text-sm font-bold px-6 py-2 rounded-full hover:bg-[#9AEBA3] transition-all shadow-md active:scale-95 group cursor-pointer'>
                                         <span className="relative z-10">CADASTRO</span>
                                         <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-40 group-hover:animate-[shine_1s_ease-in-out]" />

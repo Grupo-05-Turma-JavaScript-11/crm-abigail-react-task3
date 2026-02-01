@@ -1,6 +1,6 @@
 import React from 'react';
-import { faqData } from '../../constants/FaqItems';
-import FaqCard from '../../components/cardFunctions/FaqCard';
+import FaqCard from '../../../components/public/cardFunctions/FaqCard';
+import { faqData } from '../../../constants/FaqItems';
 
 const Faq: React.FC = () => {
 

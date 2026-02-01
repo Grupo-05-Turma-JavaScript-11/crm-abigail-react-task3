@@ -22,9 +22,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         id: 0,
         nome: "",
         email: "",
-        foto: "",
         senha: "",
-        tipo: "",
+        crm: "",
+        foto: "",
+        tipo: "MEDICO",
         token: ""
     }) 
 
@@ -47,8 +48,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
             nome: "",
             email: "",
             senha: "",
+            crm: "",
             foto: "",
-            tipo: "",
+            tipo: "MEDICO",
             token: ""
         })
     } 

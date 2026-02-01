@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners"
-import { AuthContext } from "../../contexts/AuthContext";
-import type UsuarioLogin from "../../models/UsuarioLogin";
+import { AuthContext } from "../../../contexts/AuthContext";
+import type UsuarioLogin from "../../../models/UsuarioLogin";
 
 function Login() {
 
@@ -13,22 +13,23 @@ function Login() {
         nome: '',
         email: '',
         senha: '',
+        crm: '',
         foto: '',
         token: '',
-        tipo: ''
+        tipo: 'MEDICO',
     }) 
 
     useEffect(() => {
         if (usuario.token !== "") {
             // Lógica de redirecionamento baseada no tipo
             switch (usuario.tipo) {
-                case 'admin':
+                case 'ADMIN':
                     navigate('/dashboard-admin');
                     break;
-                case 'medico':
+                case 'MEDICO':
                     navigate('/agenda-medica');
                     break;
-                case 'assistente':
+                case 'ASSISTENTE':
                     navigate('/recepcao');
                     break;
                 default:
