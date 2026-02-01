@@ -43,8 +43,8 @@ export default function App() {
           <Routes>
             {/* --- PÚBLICAS --- */}
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/cadastrar" element={<Cadastro />} />
+            <Route path="/usuarios/login" element={<Login />} />
+            <Route path="/usuarios/cadastrar" element={<Cadastro />} />
             <Route path="/sobre" element={<Sobre />} />
 
             {/* --- TODOS OS LOGADOS = EXEMPLOOO --- */}
