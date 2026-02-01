@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useState } from "react"
+import { createContext, type ReactNode, useEffect, useState } from "react"
 import { login } from "../services/Service"
 import type UsuarioLogin from "../models/UsuarioLogin"
 
@@ -8,7 +8,7 @@ interface AuthContextProps {
     handleLogout(): void
     handleLogin(usuario: UsuarioLogin): Promise<void>
     isLoading: boolean
-} 
+}
 
 interface AuthProviderProps {
     children: ReactNode
@@ -25,7 +25,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
         senha: "",
         tipo: "MEDICO",
         token: ""
-    }) 
+    });
+
+    // 🔴 LOGIN FAKE TEMPORÁRIO PARA DESENVOLVIMENTO DO DASHBOARD
+    useEffect(() => {        
+        setUsuario({
+            id: 1,
+            nome: "Bruna",
+            email: "bruna@fake.com",
+            foto: "",
+            senha: "",
+            tipo: "ADMIN",
+            token: "fake-token"
+        });
+    }, []);
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -49,11 +62,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
             tipo: "ADMIN",
             token: ""
         })
-    } 
+    }
 
     return (
         <AuthContext.Provider value={{ usuario, handleLogin, handleLogout, isLoading }}>
             {children}
         </AuthContext.Provider>
-    ) 
+    )
 }
