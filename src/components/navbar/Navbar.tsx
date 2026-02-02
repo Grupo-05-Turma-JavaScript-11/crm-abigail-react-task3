@@ -45,6 +45,12 @@ function Navbar() {
                             SOBRE NÓS
                         </div>
                     </Link>
+                    {/* provisório */}
+                    <Link to="/atendimento">
+                        <div className='relative font-bold text-sm group transition-colors hover:text-[#45C4B0] cursor-pointer'>
+                            Atendimentos
+                        </div>
+                    </Link>
 
                     {/* 2. CORREÇÃO: Bloco fechado corretamente para funcionalidades restritas */}
                     {(usuario.token !== "" && (usuario.tipo === 'MEDICO' || usuario.tipo === 'ADMIN')) && (

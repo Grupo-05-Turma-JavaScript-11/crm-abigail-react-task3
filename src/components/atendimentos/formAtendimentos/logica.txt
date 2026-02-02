@@ -1,0 +1,129 @@
+  const [loading, setLoading] = useState(false);
+  
+  // Estados para busca dinâmica
+  const [buscaMedico, setBuscaMedico] = useState("");
+  const [medicosFiltrados, setMedicosFiltrados] = useState([]);
+  const [buscaPaciente, setBuscaPaciente] = useState("");
+  const [pacientesFiltrados, setPacientesFiltrados] = useState([]);
+
+  // Estado do formulário
+  const [formData, setFormData] = useState({
+    dataHora: '',
+    status: 'Agendado',
+    motivo: '',
+    observacao: '',
+    formaPagamento: 'Particular',
+    idMedico: '',
+    idPaciente: '',
+    foto: null
+  });
+
+  // Efeito para buscar Médicos quando o usuário digita
+  useEffect(() => {
+    if (buscaMedico.length > 2) {
+      const delayDebounce = setTimeout(async () => {
+        const response = await axios.get(`/api/medicos?nome=${buscaMedico}`);
+        setMedicosFiltrados(response.data);
+      }, 300);
+      return () => clearTimeout(delayDebounce);
+    }
+  }, [buscaMedico]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      // Se tiver foto, usamos FormData para envio de arquivo
+      const data = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value) data.append(key, value);
+      });
+
+      await axios.post('/api/atendimentos', data);
+      onRefresh(); // Função para recarregar a lista na página principal
+      onClose();
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+
+  ---- 
+
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+
+      <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* Busca de Médico com Autocomplete Simples */}
+        <div className="relative">
+            <label className="text-xs font-bold text-[#025959]">Médico</label>
+            <input
+              type="text"
+              value={buscaMedico}
+              onChange={(e) => setBuscaMedico(e.target.value)}
+              placeholder="Digite o nome do médico..."
+              className="border p-2 rounded-lg w-full border-[#9AEBA3] outline-none"
+            />
+            {medicosFiltrados.length > 0 && (
+              <ul className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                {medicosFiltrados.map((m: any) => (
+                  <li
+                    key={m.id}
+                    onClick={() => {
+                      setFormData({ ...formData, idMedico: m.id });
+                      setBuscaMedico(m.nome);
+                      setMedicosFiltrados([]);
+                    }}
+                    className="p-2 hover:bg-[#F8FAFC] cursor-pointer text-sm"
+                  >
+                    {m.nome}
+                  </li>
+                ))}
+              </ul>
+            )}
+        </div>
+
+          {/* ... Repetir lógica similar para Paciente ... */}
+
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="datetime-local"
+              required
+              onChange={(e) =>
+                setFormData({ ...formData, dataHora: e.target.value })
+              }
+              className="border p-2 rounded-lg border-[#9AEBA3]"
+            />
+            <select
+              onChange={(e) =>
+                setFormData({ ...formData, formaPagamento: e.target.value })
+              }
+              className="border p-2 rounded-lg border-[#9AEBA3]"
+            >
+              <option value="Particular">Particular</option>
+              <option value="Convênio">Convênio</option>
+            </select>
+          </div>
+
+          <textarea
+            placeholder="Observações"
+            onChange={(e) =>
+              setFormData({ ...formData, observacao: e.target.value })
+            }
+            className="border p-2 rounded-lg w-full h-20 border-[#9AEBA3]"
+          />
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-[#45C4B0] text-white py-3 rounded-xl font-bold hover:bg-[#025959] transition-all disabled:opacity-50"
+          >
+            {loading ? "Salvando..." : "Confirmar Atendimento"}
+          </button>
+        </form>
+      </div>
+    </div>

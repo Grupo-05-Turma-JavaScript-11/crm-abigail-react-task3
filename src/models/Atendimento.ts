@@ -12,6 +12,4 @@ export default interface Atendimento {
     foto ?: string;
     paciente?: Paciente | null;
     medico?: Usuario | null;
-    idMedico?: number;
-    pacientenome?: string;
   }

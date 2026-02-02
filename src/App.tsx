@@ -13,6 +13,7 @@ import { AuthContext } from "./contexts/AuthContext";
 import Atendimentos from "./pages/dashboard/atendimento/atendimento";
 import Navbar from "./components/navbar/Navbar";
 import Dashboard from "./pages/dashboard/Dashboard";
+import AtendimentoForm from "./components/atendimentos/formAtendimentos/AtendimentoForm";
 
 // Componente para proteger rotas
 interface ProtectedRouteProps {
@@ -51,6 +52,7 @@ export default function App() {
 
           <Route path="/atendimento" element={<Atendimentos />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/atendimentoForm" element={<AtendimentoForm />} />
 
           {/* 
             --- ROTAS EXCLUSIVAS: ASSISTENTE E ADMIN ---

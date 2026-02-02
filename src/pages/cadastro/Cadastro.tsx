@@ -6,6 +6,7 @@ import type { Usuario } from "../../models/Usuario";
 
 function Cadastro() {
   const navigate = useNavigate();
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [confirmarSenha, setConfirmarSenha] = useState<string>("");
 
@@ -26,7 +27,7 @@ function Cadastro() {
   }, [usuario]);
 
   function retornar() {
-    navigate("/");
+    navigate("/login");
   }
 
   function atualizarEstado(e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {

@@ -23,22 +23,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         nome: "",
         email: "",
         senha: "",
-        tipo: "MEDICO",
+        tipo: "",
         token: ""
     });
-
-    // 🔴 LOGIN FAKE TEMPORÁRIO PARA DESENVOLVIMENTO DO DASHBOARD
-    useEffect(() => {        
-        setUsuario({
-            id: 1,
-            nome: "Bruna",
-            email: "bruna@fake.com",
-            foto: "",
-            senha: "",
-            tipo: "ADMIN",
-            token: "fake-token"
-        });
-    }, []);
 
     const [isLoading, setIsLoading] = useState(false)
 
