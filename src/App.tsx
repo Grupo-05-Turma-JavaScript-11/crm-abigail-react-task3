@@ -85,7 +85,7 @@ export default function App() {
                                 Notificações (placeholder)
                             </div>}
                         />
-                        <Route path="/atndimentos/novo" element={
+                        <Route path="/atendimentos/novo" element={
                             <div className="min-h-screen bg-slate-50 p-6">
                                 Novo atendimento (placeholder)
                             </div>}
