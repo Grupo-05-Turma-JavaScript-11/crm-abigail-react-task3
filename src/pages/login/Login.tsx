@@ -14,7 +14,7 @@ function Login() {
         email: '',
         senha: '',
         crm: '',
-        tipo: 'MEDICO',
+        tipo: '',
         token: ''
     }) 
 

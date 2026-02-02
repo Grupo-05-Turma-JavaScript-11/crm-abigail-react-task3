@@ -35,6 +35,7 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   return <>{children}</>;
 }
 
+// login e cadastrar estavam com "usuarios/" antes, pq?
 export default function App() {
   return (
     <AuthProvider>
@@ -43,8 +44,8 @@ export default function App() {
           <Routes>
             {/* --- PÚBLICAS --- */}
             <Route path="/" element={<Home />} />
-            <Route path="/usuarios/login" element={<Login />} />
-            <Route path="/usuarios/cadastrar" element={<Cadastro />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/cadastrar" element={<Cadastro />} />
             <Route path="/sobre" element={<Sobre />} />
 
             {/* --- TODOS OS LOGADOS = EXEMPLOOO --- */}

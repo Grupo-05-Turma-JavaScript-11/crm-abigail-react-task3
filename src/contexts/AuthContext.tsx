@@ -23,7 +23,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         nome: "",
         email: "",
         senha: "",
-        tipo: "MEDICO",
+        tipo: "",
         token: ""
     }) 
 
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             nome: "",
             email: "",
             senha: "",
-            tipo: "ADMIN",
+            tipo: "",
             token: ""
         })
     } 

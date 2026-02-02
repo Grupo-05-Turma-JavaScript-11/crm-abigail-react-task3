@@ -1,5 +1,5 @@
 import FeatureCard from '../../components/cardFunctions/FeatureCard';
-import { medicalFeatures } from '../../constants/MedicalFeatures';
+import { medicalFeatures } from '../../constants/medicalFeatures';
 
 const MedicalFeatures = () => {
   return (
