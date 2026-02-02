@@ -6,9 +6,9 @@ import Home from "./pages/home/Home";
 import Sobre from "./pages/sobre/Sobre";
 import Feature from "./pages/funcionalidades/Feature";
 
-import NovoPaciente from "./pages/pacientes/NovoPaciente";
-import ListaPacientes from "./pages/pacientes/ListaPacientes";
-import EditarPaciente from "./pages/pacientes/EditarPaciente";
+import NovoPaciente from "./components/pacientes/NovoPaciente";
+import ListaPacientes from "./components/pacientes/ListaPacientes";
+import EditarPaciente from "./components/pacientes/EditarPaciente";
 
 export default function App() {
   return (
