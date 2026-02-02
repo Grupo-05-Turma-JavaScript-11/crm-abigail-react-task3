@@ -1,102 +1,100 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { useContext, type ReactNode } from "react";
 
-// Componentes globais (site público)
 import Navbar from "./components/navbar/Navbar";
 import Footer from "./components/footer/Footer";
 
-// Páginas públicas
 import Home from "./pages/home/Home";
 import Sobre from "./pages/sobre/Sobre";
 import Login from "./pages/login/Login";
 import Cadastro from "./pages/cadastro/Cadastro";
 
-// Dashboard (layout próprio)
 import Dashboard from "./pages/dashboard/Dashboard";
+import DashboardLayout from "./pages/dashboard/DashboardLayout";
 
-// Contexto de autenticação
 import { AuthProvider, AuthContext } from "./contexts/AuthContext";
 
-// Proteção de rotas e Tipagem das Props
-interface ProtectedRouteProps {
-    children: ReactNode;        // componente protegido
-    allowedRoles?: string[];    // tipos de usuário permitidos
+/* Layout público (site) */
+function PublicLayout() {
+    return (
+        <>
+            <Navbar />
+            <Outlet />
+            <Footer />
+        </>
+    );
 }
 
-// Componente que protege rotas
-function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
+/* Proteção de rotas */
+interface ProtectedRouteProps {
+    children: ReactNode;
+    allowedRoles?: string[];
+}
 
-    // Usuário logado vem do AuthContext
+function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
     const { usuario } = useContext(AuthContext);
 
-    // Se NÃO tem token → manda para login
-    if (usuario.token === "") {
-        return <Navigate to="/login" replace />;    // Replace evita que o usuário volte para uma página protegida sem login
-    }
+    if (!usuario?.token) return <Navigate to="/login" replace />;
 
-    // Se a rota exige papel específico e o usuário não tem
     if (allowedRoles && !allowedRoles.includes(usuario.tipo)) {
         return <Navigate to="/" replace />;
     }
-
-    // Se passou nas validações, renderiza o conteúdo
     return <>{children}</>;
-}
-
-
-// AppContent decide quando mostrar Navbar e Footer
-function AppContent() {
-
-    // Hook para saber a rota atual
-    const location = useLocation();
-
-    // Verifica se a rota atual pertence à área interna (dashboard); se começar com "/dashboard", oculta Navbar e Footer
-    const isInternalRoute =
-        location.pathname.startsWith("/dashboard")
-
-    return (
-        <>
-            {/* Navbar só aparece no site público */}
-            {!isInternalRoute && <Navbar />}
-
-            {/* Definição das rotas */}
-            <Routes>
-
-                {/* ROTAS PÚBLICAS */}
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/cadastro" element={<Cadastro />} />
-                <Route path="/sobre" element={<Sobre />} />
-
-                {/* ROTAS PROTEGIDAS (exemplo) */}
-
-                {/* Dashboard Admin */}
-                <Route
-                    path="/dashboard-admin"
-                    element={
-                        <ProtectedRoute allowedRoles={["admin"]}>
-                            <Dashboard />
-                        </ProtectedRoute>
-                    }
-                />
-
-                {/* Fallback */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-
-            </Routes>
-
-            {/* Footer só aparece no site público */}
-            {!isInternalRoute && <Footer />}
-        </>
-    );
 }
 
 export default function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
-                <AppContent />
+                <Routes>
+                    {/* ROTAS PÚBLICAS */}
+                    <Route element={<PublicLayout />}>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/sobre" element={<Sobre />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/cadastro" element={<Cadastro />} />
+                    </Route>
+
+                    {/* ROTAS INTERNAS (DASHBOARD) */}
+                    <Route
+                        element={
+                            <ProtectedRoute allowedRoles={["admin", "medico", "assistente"]}>
+                                <DashboardLayout />
+                            </ProtectedRoute>
+                        }
+                    >
+                        {/* Ajuste os paths conforme suas rotas reais */}
+                        <Route path="/dashboard-admin" element={<Dashboard />} />
+                        <Route path="/agenda-medica" element={
+                            <div className="min-h-screen bg-slate-50 p-6">
+                                Agenda (placeholder)
+                            </div>}
+                        />
+                        <Route path="/recepcao" element={
+                            <div className="min-h-screen bg-slate-50 p-6">
+                                Recepção (placeholder)
+                            </div>}
+                        />
+                        <Route path="/configuracoes" element={
+                            <div className="min-h-screen bg-slate-50 p-6">
+                                Configurações (placeholder)
+                            </div>}
+                        />
+                        <Route path="/notificacoes" element={
+                            <div className="min-h-screen bg-slate-50 p-6">
+                                Notificações (placeholder)
+                            </div>}
+                        />
+                        <Route path="/atndimentos/novo" element={
+                            <div className="min-h-screen bg-slate-50 p-6">
+                                Novo atendimento (placeholder)
+                            </div>}
+                        />
+                    </Route>
+
+                    {/* Fallback */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
             </BrowserRouter>
         </AuthProvider>
     );
