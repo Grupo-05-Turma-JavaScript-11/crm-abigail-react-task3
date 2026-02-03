@@ -8,9 +8,20 @@ function Login() {
 
     const navigate = useNavigate();
     const { usuario, handleLogin, isLoading } = useContext(AuthContext)
+
     const [usuarioLogin, setUsuarioLogin] = useState<UsuarioLogin>(
         {} as UsuarioLogin
       );
+
+    // const [usuarioLogin, setUsuarioLogin] = useState<UsuarioLogin>({
+    //     id: 0,
+    //     nome: '',
+    //     email: '',
+    //     senha: '',
+    //     crm: '',
+    //     tipo: '',
+    //     token: ''
+    // }) 
 
     useEffect(() => {
         if (usuario.token !== "") {

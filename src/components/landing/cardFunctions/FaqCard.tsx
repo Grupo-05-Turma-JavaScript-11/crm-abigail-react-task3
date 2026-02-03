@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type FaqItem from "../../models/Faq";
+import type FaqItem from "../../../models/Faq";
 
 interface FaqCardProps {
     item: FaqItem;

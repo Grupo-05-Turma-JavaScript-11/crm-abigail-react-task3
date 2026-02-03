@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { Search, Plus } from "lucide-react";
-import AtendimentoCard from "../../components/atendimentos/cardAtendimentos/AtendimentoCard";
+import AtendimentoCard from "../../components/landing/atendimentos/cardAtendimentos/AtendimentoCard";
 import type Atendimento from "../../models/Atendimento";
-import AtendimentoForm from "../../components/atendimentos/formAtendimentos/AtendimentoForm";
+import AtendimentoForm from "../../components/landing/atendimentos/formAtendimentos/AtendimentoForm";
 import { api, atualizar, buscar, deletar } from "../../services/Service";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";

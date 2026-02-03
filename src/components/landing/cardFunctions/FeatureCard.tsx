@@ -1,4 +1,4 @@
-import type Feature from "../../models/Feature";
+import type Feature from "../../../models/Feature";
 
 interface FeatureCardProps {
   feature: Feature;

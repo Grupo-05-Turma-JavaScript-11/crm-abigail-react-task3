@@ -13,10 +13,14 @@ import Login from "./pages/login/Login";
 import Cadastro from "./pages/cadastro/Cadastro";
 
 // Dashboard (layout próprio)
-import Dashboard from "./pages/dashboard/Dashboard";
 
 // Contexto de autenticação
 import { AuthProvider, AuthContext } from "./contexts/AuthContext";
+import Feature from "./pages/funcionalidades/Feature";
+import PublicLayout from "./pages/dashboard/PublicLayout";
+import DashboardHome from "./pages/dashboard/DashboardHome";
+import Atendimentos from "./pages/atendimento/atendimento";
+import DashboardLayout from "./pages/dashboard/DashboardLayout";
 
 // Proteção de rotas e Tipagem das Props
 interface ProtectedRouteProps {
@@ -44,50 +48,27 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
     return <>{children}</>;
 }
 
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Navbar />
+          <Routes>
+            {/* --- PÚBLICAS --- */}
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/usuarios/cadastrar" element={<Cadastro />} />
+            <Route path="/sobre" element={<Sobre />} />
+            <Route path="/funcionalidades" element={ <Feature /> } />
 
-// AppContent decide quando mostrar Navbar e Footer
-function AppContent() {
+            <Route path="/atendimentos" element={ <Atendimentos/>}/>
 
-    // Hook para saber a rota atual
-    const location = useLocation();
-
-    // Verifica se a rota atual pertence à área interna (dashboard); se começar com "/dashboard", oculta Navbar e Footer
-    const isInternalRoute =
-        location.pathname.startsWith("/dashboard")
-
-    return (
-        <>
-            {/* Navbar só aparece no site público */}
-            {!isInternalRoute && <Navbar />}
-
-            {/* Definição das rotas */}
-            <Routes>
-
-                {/* ROTAS PÚBLICAS */}
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/cadastro" element={<Cadastro />} />
-                <Route path="/sobre" element={<Sobre />} />
-                
-
-                {/* ROTAS PROTEGIDAS (exemplo) */}
-
-                {/* Dashboard Admin */}
-                <Route
-                    path="/dashboard"
-                    element={
-                            <Dashboard />
-                    }
-                />
-
-                {/* Fallback */}
-                <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/dashboard" element={<DashboardHome/>}/>
 
             </Routes>
-
-            {/* Footer só aparece no site público */}
-            {!isInternalRoute && <Footer />}
-        </>
+            <Footer />
+        </ BrowserRouter>
+      </AuthProvider>
     );
 }
 

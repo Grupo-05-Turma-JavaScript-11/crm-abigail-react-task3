@@ -1,4 +1,4 @@
-import FeatureCard from '../../components/cardFunctions/FeatureCard';
+import FeatureCard from '../../components/landing/cardFunctions/FeatureCard';
 import { medicalFeatures } from '../../constants/medicalFeatures';
 
 const MedicalFeatures = () => {

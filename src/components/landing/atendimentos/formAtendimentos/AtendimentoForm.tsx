@@ -7,11 +7,11 @@ import {
 } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-import { AuthContext } from "../../../contexts/AuthContext";
-import { atualizar, buscar, cadastrar } from "../../../services/Service";
-import type Atendimento from "../../../models/Atendimento";
-import type { Usuario } from "../../../models/Usuario";
-import type { PacienteFormData } from "../../../models/Paciente";
+import { AuthContext } from "../../../../contexts/AuthContext";
+import { atualizar, buscar, cadastrar } from "../../../../services/Service";
+import type Atendimento from "../../../../models/Atendimento";
+import type { Usuario } from "../../../../models/Usuario";
+import type { PacienteFormData } from "../../../../models/Paciente";
 
 function AtendimentoForm({
   onClose,

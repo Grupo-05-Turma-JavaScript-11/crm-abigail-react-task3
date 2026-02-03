@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { AuthContext } from "../../../contexts/AuthContext";
-import { buscar } from "../../../services/Service";
+import { buscar} from "../../../services/Service";
 
 import PageHeader from "../components/PageHeader";
 import StatsSection from "../components/StatsSection";
@@ -12,6 +12,8 @@ import BottomSection from "../components/BottomSection";
 import DashboardFooter from "../components/DashboardFooter";
 
 import type { StatCard, AgendaItem, ActivityItem } from "../dashboard.types";
+import type Atendimento from "../../../models/Atendimento";
+import type { PacienteFormData } from "../../../models/Paciente";
 
 function safeDate(value: any): Date | null {
     if (!value) return null;
@@ -26,12 +28,9 @@ function formatTimeBR(date: Date | null): string {
 
 function mapStatus(raw: any): AgendaItem["status"] {
     const s = String(raw ?? "").trim().toLowerCase();
-
-    if (s.includes("confirm")) return "Confirmado";
-    if (s.includes("atend")) return "Em Atendimento";
-    if (s.includes("cancel")) return "Cancelado";
-
-    // fila / pendente / aguardando etc -> trata como agendado 
+    if (s.includes("AGENDADO")) return "Agendado";
+    if (s.includes("EM ATENDIMENTO")) return "Em Atendimento";
+    if (s.includes("CANCELADO")) return "Cancelado";
     return "Agendado";
 }
 
@@ -45,37 +44,31 @@ export default function AdminDashboard() {
     const { usuario } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    // Dados crus do backend (não tipa como Paciente/Atendimento aqui)
-    const [rawPacientes, setRawPacientes] = useState<any[]>([]);
-    const [rawAtendimentos, setRawAtendimentos] = useState<any[]>([]);
-
-    // Controle exigido pelo AgendaCard
+    const [rawPacientes, setRawPacientes] = useState<PacienteFormData[]>([]);
+    const [rawAtendimentos, setRawAtendimentos] = useState<Atendimento[]>([]);
     const [periodoAtivo, setPeriodoAtivo] = useState<"Dia" | "Semana" | "Mês">("Dia");
 
     useEffect(() => {
-        buscar("/pacientes", setRawPacientes, { headers: { Authorization: usuario.token } });
-        buscar("/atendimentos", setRawAtendimentos, { headers: { Authorization: usuario.token } });
+        buscar("/pacientes", setRawPacientes, {header: {Authorization: usuario.token}});
+        buscar("/atendimentos", setRawAtendimentos, {header: {Authorization: usuario.token}});
     }, [usuario.token]);
 
-    // Converte backend -> AgendaItem (UI)
+    // Admin vê agenda global (para gestão/auditoria, não para prontuário)
     const agenda: AgendaItem[] = useMemo(() => {
         return rawAtendimentos.map((a: any) => {
             const date = safeDate(a.dataHora ?? a.data_hora ?? a.data ?? a.horario ?? a.dateTime);
 
             const patientName =
                 a.paciente?.nome ??
-                a.paciente?.name ??
                 a.pacienteNome ??
                 a.nomePaciente ??
-                a.patient ??
                 "—";
 
             const type =
+                a.especialidade ??
+                a.tipoAtendimento ??
                 a.motivo ??
                 a.tipo ??
-                a.tipoAtendimento ??
-                a.especialidade ??
-                a.descricao ??
                 "Consulta";
 
             return {
@@ -88,7 +81,6 @@ export default function AdminDashboard() {
         });
     }, [rawAtendimentos]);
 
-    // KPIs (UI) — compatíveis com StatCard
     const statCards: StatCard[] = useMemo(() => {
         const atendHoje = rawAtendimentos.filter((a: any) => {
             const date = safeDate(a.dataHora ?? a.data_hora ?? a.data ?? a.horario ?? a.dateTime);
@@ -132,17 +124,13 @@ export default function AdminDashboard() {
 
     return (
         <>
-            <PageHeader onNew={() => navigate("/atendimentos/novo")} />
+            {/* Admin: ação principal = gestão */}
+            <PageHeader onNew={() => navigate("/dashboard/configuracoes")} />
 
             <StatsSection statCards={statCards} />
 
             <section className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
-                <AgendaCard
-                    agenda={agenda}
-                    periodoAtivo={periodoAtivo}
-                    setPeriodoAtivo={setPeriodoAtivo}
-                />
-
+                <AgendaCard agenda={agenda} periodoAtivo={periodoAtivo} setPeriodoAtivo={setPeriodoAtivo} />
                 <ActivitiesCard activities={activities} />
             </section>
 

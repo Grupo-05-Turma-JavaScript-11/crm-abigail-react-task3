@@ -1,5 +1,5 @@
 import React from "react";
-import { Title } from "../titleabout/Title";
+import { Title } from "../titleAbout/Title";
 import { HeroBenefits } from "./HeroBenefits";
 
 type AboutHeroProps = {

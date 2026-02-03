@@ -1,12 +1,13 @@
 import React from "react";
 import aboutHeroImg from "../../assets/illustrations/about-hero.png";
+import { AboutHero } from "../../components/landing/about/hero/AboutHero";
+import { HowItHelps } from "../../components/landing/about/help/HowItHelps";
+import { ResultsAside } from "../../components/landing/about/results/ResultsAside";
+import { ValuesSection } from "../../components/landing/about/values/ValuesSection";
+import { TeamSection } from "../../components/landing/about/team/TeamSection";
+import { AboutCta } from "../../components/landing/about/cta/AboutCta";
 
-import { AboutHero } from "../../components/about/hero/AboutHero";
-import { HowItHelps } from "../../components/about/help/HowItHelps";
-import { ResultsAside } from "../../components/about/results/ResultsAside";
-import { ValuesSection } from "../../components/about/values/ValuesSection";
-import { TeamSection } from "../../components/about/team/TeamSection";
-import { AboutCta } from "../../components/about/cta/AboutCta";
+
 
 const Sobre: React.FC = () => {
     return (

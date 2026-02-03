@@ -4,6 +4,9 @@ import { AuthContext } from "../../contexts/AuthContext";
 import AdminDashboard from "./role/AdminDashboard";
 import MedicoDashboard from "./role/MedicoDashboard";
 import AssistenteDashboard from "./role/AssistenteDashboard";
+import Topbar from "./components/Topbar";
+import Sidebar from "./components/Sidebar";
+import DashboardLayout from "./DashboardLayout";
 
 export default function DashboardHome() {
     const { usuario } = useContext(AuthContext);
@@ -16,18 +19,14 @@ export default function DashboardHome() {
         );
     }
 
-    switch (usuario.tipo) {
-        case "ADMIN":
-            return <AdminDashboard />;
-        case "MEDICO":
-            return <MedicoDashboard />;
-        case "ASSISTENTE":
-            return <AssistenteDashboard />;
-        default:
-            return (
-                <div className="min-h-[60vh] flex items-center justify-center text-slate-500">
-                    Perfil não reconhecido.
-                </div>
-            );
-    }
+
+
+    return (
+        <>
+            {usuario.tipo === "ADMIN" && 
+            <AdminDashboard />}
+            {usuario.tipo === "MEDICO" && <MedicoDashboard />}
+            {usuario.tipo === "ASSISTENTE" && <AssistenteDashboard />}
+        </>
+    );
 }

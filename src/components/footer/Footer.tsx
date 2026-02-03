@@ -1,9 +1,12 @@
 import { GithubLogoIcon } from "@phosphor-icons/react";
+import { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
 
 
 function Footer() {
     const location = useLocation();
+    const { usuario } = useContext(AuthContext);
     // Função para garantir que a página sempre comece do topo ao clicar
     const scrollToTop = () => {
         window.scrollTo({
@@ -15,6 +18,10 @@ function Footer() {
     // Lógica para esconder a Navbar se estiver em '/login' ou '/cadastro'
     if (location.pathname === '/login' || location.pathname === '/cadastro') {
         return null; // Retorna nada, logo, a Navbar não aparece nessas telas
+    }
+
+    if(location.pathname === '/' || usuario.token !== '') {
+        return null;
     }
 
     return (

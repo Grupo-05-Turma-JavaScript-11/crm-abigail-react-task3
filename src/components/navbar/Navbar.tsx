@@ -19,7 +19,7 @@ function Navbar() {
     return null;
   }
 
-  if (usuario.token === "") {
+  if (usuario.token === "" || location.pathname === "/") {
     return (
       <div className="w-full flex justify-center py-4 bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
         <div className="container flex justify-between items-center text-lg mx-8">
