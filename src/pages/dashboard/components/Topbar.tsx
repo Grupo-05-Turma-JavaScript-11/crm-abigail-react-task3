@@ -43,7 +43,9 @@ export default function Topbar({ sidebarOpen, onToggleSidebar, userName, roleLab
                         </svg>
                     </button>
 
-                    <div className="flex items-center gap-2 group cursor-default">
+                    <Link to={"/dashboard"}>
+                    <div className="flex items-center gap-2 group cursor-pointer">
+                        
                         <div className="w-9 h-9 bg-[#012340] rounded-lg flex items-center justify-center transition-transform duration-300 group-hover:rotate-12">
                             <span className="text-white font-bold italic">A</span>
                         </div>
@@ -52,6 +54,8 @@ export default function Topbar({ sidebarOpen, onToggleSidebar, userName, roleLab
                             Abgail
                         </span>
                     </div>
+                    </Link>
+
                 </div>
 
                 <div className="flex items-center gap-3">

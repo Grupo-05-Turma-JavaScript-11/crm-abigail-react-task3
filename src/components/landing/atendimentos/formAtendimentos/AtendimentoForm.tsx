@@ -12,6 +12,7 @@ import { atualizar, buscar, cadastrar } from "../../../../services/Service";
 import type Atendimento from "../../../../models/Atendimento";
 import type { Usuario } from "../../../../models/Usuario";
 import type { PacienteFormData } from "../../../../models/Paciente";
+import { ToastAlerta } from "../../../../utils/ToastAlerta";
 
 function AtendimentoForm({
   onClose,
@@ -154,13 +155,13 @@ function AtendimentoForm({
           headers: { Authorization: token },
         });
 
-        alert("Atendimento atualizado com sucesso!");
+        ToastAlerta("Atendimento atualizado com sucesso", "sucesso");
       } else {
         await cadastrar(`/atendimentos`, payload, setAtendimento, {
           headers: { Authorization: token },
         });
 
-        alert("Atendimento cadastrado com sucesso!");
+        ToastAlerta("Atendimento cadastrado com sucesso", "sucesso");
       }
 
       retornar();

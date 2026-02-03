@@ -6,6 +6,7 @@ import type { PacienteFormData } from "../../models/Paciente";
 import { cadastrar } from "../../services/Service";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
+import { ToastAlerta } from "../../utils/ToastAlerta";
 
 const NovoPaciente = () => {
   const navigate = useNavigate();
@@ -42,14 +43,11 @@ const NovoPaciente = () => {
         headers: { Authorization: token },
       });
 
-      alert("Paciente cadastrado com sucesso!");
+      ToastAlerta("Paciente cadastrado com sucesso", "sucesso");
       navigate("/pacientes");
     } catch (error: any) {
       console.error("Erro detalhado:", error.response?.data || error.message);
-      alert(
-        "Erro ao cadastrar: " +
-          (error.response?.data?.message || "Verifique o console")
-      );
+      ToastAlerta("Erro ao cadastrar o paciente", "erro");
     }
   };
 
@@ -69,7 +67,7 @@ const NovoPaciente = () => {
             </p>
           </div>
           <button
-            onClick={() => navigate("/pacientes")}
+            onClick={() => navigate("/dashboard/pacientes")}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
             <ArrowLeft size={24} />
@@ -237,7 +235,7 @@ const NovoPaciente = () => {
           <div className="flex justify-end gap-4 pt-6 border-t mt-4">
             <button
               type="button"
-              onClick={() => navigate("/pacientes")}
+              onClick={() => navigate("/dashboard/pacientes")}
               className="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-all"
             >
               Cancelar

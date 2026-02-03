@@ -5,6 +5,7 @@ import { UserCog, ArrowLeft, Loader2 } from "lucide-react"; // Ícones para o es
 import { AuthContext } from "../../contexts/AuthContext";
 import type { PacienteFormData } from "../../models/Paciente";
 import { atualizar, buscarPorId } from "../../services/Service";
+import { ToastAlerta } from "../../utils/ToastAlerta";
 
 
 const EditarPaciente = () => {
@@ -28,7 +29,7 @@ const EditarPaciente = () => {
       const dados = await buscarPorId<PacienteFormData>(`/pacientes/${id}`, { headers: { Authorization: token } });
       reset(dados);
     } catch (error) {
-      alert("Erro ao carregar paciente");
+       ToastAlerta("Erro ao carregar o paciente", "erro");
       console.log(error)
       navigate("/pacientes");
     } finally {
@@ -47,13 +48,13 @@ const EditarPaciente = () => {
       await atualizar(`/pacientes`, data, { headers: { Authorization: token } });
       
       // 2. Feedback de sucesso
-      alert("Paciente atualizado com sucesso!");
+      ToastAlerta("Paciente atualizado com sucesso!", "sucesso");
       
       // 3. Redirecionamento
       navigate("/pacientes");
     } catch (error) {
+      ToastAlerta("Erro ao atualizar paciente. Verifique os dados e tente novamente.", "erro");
       console.error("Erro ao atualizar:", error);
-      alert("Erro ao atualizar paciente. Verifique os dados e tente novamente.");
     }
   };
 

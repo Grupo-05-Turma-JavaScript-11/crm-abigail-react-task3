@@ -4,6 +4,7 @@ import { UserPlus, Pencil, Trash2, Users, Search } from "lucide-react"; // Ícon
 import { AuthContext } from "../../contexts/AuthContext";
 import type { PacienteFormData } from "../../models/Paciente";
 import { buscar, deletar } from "../../services/Service";
+import { ToastAlerta } from "../../utils/ToastAlerta";
 
 
 const ListaPacientes = () => {
@@ -23,10 +24,10 @@ const ListaPacientes = () => {
       await deletar(`/pacientes/${id}`,{ headers: { Authorization: token } } );
       setPacientes((prev) => prev.filter(p => p.id !== id));
       
-      alert("Paciente excluído com sucesso!");
+      ToastAlerta("Paciente excluído com sucesso!", "sucesso");
     } catch (error) {
       console.error(error);
-      alert("Erro ao excluir paciente. Verifique se existem dependências vinculadas.");
+      ToastAlerta("Erro ao excluir paciente. Verifique se existem dependências vinculadas.", "erro");
     }
   };
 
@@ -36,7 +37,7 @@ const ListaPacientes = () => {
 
     } catch (error) {
       console.error(error);
-      alert("Erro ao carregar pacientes");
+      ToastAlerta("Erro ao buscar pacientes", "erro");
       if (error.toString().includes("401")) {
         handleLogout();
       }

@@ -7,6 +7,7 @@ import { api, atualizar, buscar, deletar } from "../../services/Service";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { set } from "react-hook-form";
+import { ToastAlerta } from "../../utils/ToastAlerta";
 
 // Tipagem básica
 
@@ -26,7 +27,7 @@ const Atendimentos = () => {
 
   useEffect(() => {
     if (token === "") {
-      alert("Você precisa estar logado!");
+      ToastAlerta("Você precisa está logado!", "erro");
       navigate("/login");
     }
   }, [token]);
@@ -37,7 +38,7 @@ const Atendimentos = () => {
 
   useEffect(() => {
     if (token === "") {
-      alert("Você precisa estar logado!");
+      ToastAlerta("Você precisa está logado!", "erro");
       navigate("/login");
     } else {
       buscarAtendimentos();
@@ -88,12 +89,13 @@ const Atendimentos = () => {
         headers: { Authorization: token },
       });
 
-      alert("Atendimento excluído com sucesso!");
+      ToastAlerta("Atendimento excluido com sucesso", "sucesso");
 
       // Atualiza a lista depois da exclusão
       buscarAtendimentos();
     } catch (error) {
-      alert("Erro ao excluir atendimento");
+      ToastAlerta("Erro ao excluir o atendimento", "erro");
+      console.log(error)
     }
   }
 

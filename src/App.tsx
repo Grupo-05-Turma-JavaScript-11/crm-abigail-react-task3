@@ -24,6 +24,8 @@ import ListaPacientes from "./pages/pacientes/ListaPacientes";
 import NovoPaciente from "./pages/pacientes/NovoPaciente";
 import EditarPaciente from "./pages/pacientes/EditarPaciente";
 import Feature from "./pages/funcionalidades/Feature";
+import { ToastAlerta } from "./utils/ToastAlerta";
+import { ToastContainer } from "react-toastify";
 
 
 
@@ -62,6 +64,7 @@ function PrivateRoute({ children }: PropsPrivateRoute) {
   const { usuario } = useContext(AuthContext);
 
   if (!usuario || !usuario.token) {
+    ToastAlerta("Você precisa está logado!", "erro");
     return <Navigate to="/login" replace />;
   }
 
@@ -71,6 +74,7 @@ function PrivateRoute({ children }: PropsPrivateRoute) {
 export default function App() {
   return (
     <AuthProvider>
+      <ToastContainer />
       <BrowserRouter>
         <Routes>
           {/* ROTAS PÚBLICAS */}
