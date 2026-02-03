@@ -4,7 +4,7 @@ import { COLORS } from "../dashboard.theme";
 
 export default function StatsSection({ statCards }: { statCards: StatCard[] }) {
     return (
-        <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <section className="px-4 py-6 sm:px-6 lg:px-8 mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
             {statCards.map((card) => (
                 <div key={card.key} className="rounded-2xl border bg-white p-4 shadow-sm transition hover:shadow-md" style={{ borderColor: "#0123401a" }}>
                     <div className="flex items-start justify-between gap-3">

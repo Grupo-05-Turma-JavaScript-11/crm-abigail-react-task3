@@ -1,3 +1,4 @@
+import type { Usuario } from "./Usuario";
 
 export interface PacienteFormData {
   id: number;
@@ -10,5 +11,5 @@ export interface PacienteFormData {
   foto?: string;
   convenio: boolean;
   observacoes?: string;
-
+  usuario?: Usuario;
 }

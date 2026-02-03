@@ -24,7 +24,7 @@ export type AgendaItem = {
     time: string;
     patient: string;
     type: string;
-    status: "Confirmado" | "Em Atendimento" | "Agendado" | "Cancelado";
+    status: "AGENDADO" | "EM TRATAMENTO" | "FINALIZADO" | "CANCELADO";
 };
 
 // Define o formato de atividades recentes (notificações)

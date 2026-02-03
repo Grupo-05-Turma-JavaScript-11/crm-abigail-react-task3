@@ -2,9 +2,10 @@ import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { UserCog, ArrowLeft, Loader2 } from "lucide-react"; // Ícones para o estilo CRM
-import { buscarPorId, atualizar } from "../../services/Service";
-import type { PacienteFormData } from "../../models/Paciente";
 import { AuthContext } from "../../contexts/AuthContext";
+import type { PacienteFormData } from "../../models/Paciente";
+import { atualizar, buscarPorId } from "../../services/Service";
+
 
 const EditarPaciente = () => {
   const { id } = useParams();
@@ -178,7 +179,7 @@ const EditarPaciente = () => {
           <div className="flex justify-end gap-4 pt-6 border-t mt-4">
             <button
               type="button"
-              onClick={() => navigate("/pacientes")}
+              onClick={() => navigate("/dashboard/pacientes")}
               className="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-all"
             >
               Cancelar

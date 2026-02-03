@@ -1,6 +1,7 @@
 import React from "react";
 import type { ActivityItem, AgendaItem, NavItem, StatCard } from "./dashboard.types";
 import { COLORS } from "./dashboard.theme";
+import { FileUser } from "lucide-react";
 
 export const toneStyles = {
     info: { bg: "#01234008", dot: COLORS.aqua, fg: COLORS.base },
@@ -26,7 +27,7 @@ export function getNavItems(tipo?: string): NavItem[] {
         {
             key: "agenda",
             label: "Agenda",
-            to: "/dashboard/agenda-medica",
+            to: "/dashboard",
             icon: (
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M7 3v3M17 3v3" />
@@ -38,7 +39,7 @@ export function getNavItems(tipo?: string): NavItem[] {
         {
             key: "recepcao",
             label: "Recepção",
-            to: "/dashboard/recepcao",
+            to: "/dashboard",
             icon: (
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M3 21h18" />
@@ -51,7 +52,7 @@ export function getNavItems(tipo?: string): NavItem[] {
         {
             key: "configuracoes",
             label: "Configurações",
-            to: "/dashboard/configuracoes",
+            to: "/dashboard",
             icon: (
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
@@ -59,16 +60,24 @@ export function getNavItems(tipo?: string): NavItem[] {
                 </svg>
             ),
         },
+        {
+            key: "pacientes",
+            label: "Pacientes",
+            to: "pacientes",
+            icon: (
+                <FileUser />
+            ),
+        },
     ];
 
     // Filtragem por perfil
-    if (tipo === "admin") return items;     // vê e entra em tudo
+    if (tipo === "ADMIN") return items;     // vê e entra em tudo
 
-    if (tipo === "medico") {    // acessa dashboard, agenda própria e notificações
+    if (tipo === "MEDICO") {    // acessa dashboard, agenda própria e notificações
         return items.filter(i => i.key !== "recepcao" && i.key !== "configuracoes");
     }
 
-    if (tipo === "assistente") {    // vê agenda, recepção e atribuições administrativas de recepção
+    if (tipo === "ASSISTENTE") {    // vê agenda, recepção e atribuições administrativas de recepção
         return items.filter(i => i.key !== "configuracoes");
     }
 
@@ -141,11 +150,11 @@ export function getStatCards(): StatCard[] {
 
 export function getAgenda(): AgendaItem[] {
     return [
-        { id: "a1", time: "09:00", patient: "Marina Souza", type: "Retorno", status: "Confirmado" },
-        { id: "a2", time: "09:30", patient: "Carlos Eduardo", type: "Exame", status: "Em Atendimento" },
-        { id: "a3", time: "10:00", patient: "Fernanda Lima", type: "Consulta", status: "Agendado" },
-        { id: "a4", time: "10:30", patient: "João Pedro", type: "Retorno", status: "Agendado" },
-        { id: "a5", time: "11:00", patient: "Ana Beatriz", type: "Consulta", status: "Cancelado" },
+        { id: "a1", time: "09:00", patient: "Marina Souza", type: "Retorno", status: "AGENDADO" },
+        { id: "a2", time: "09:30", patient: "Carlos Eduardo", type: "Exame", status: "EM TRATAMENTO" },
+        { id: "a3", time: "10:00", patient: "Fernanda Lima", type: "Consulta", status: "FINALIZADO" },
+        { id: "a4", time: "10:30", patient: "João Pedro", type: "Retorno", status: "FINALIZADO" },
+        { id: "a5", time: "11:00", patient: "Ana Beatriz", type: "Consulta", status: "CANCELADO" },
     ];
 }
 

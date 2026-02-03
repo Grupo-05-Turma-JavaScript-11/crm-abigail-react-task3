@@ -1,3 +1,6 @@
+import type Atendimento from "./Atendimento";
+import type { PacienteFormData } from "./Paciente";
+
 export type Tipo = 'ADMIN' | 'MEDICO' | 'ASSISTENTE' | ''
 
 export interface Usuario {
@@ -8,7 +11,8 @@ export interface Usuario {
   crm?: string;
   foto?: string;
   tipo: Tipo
-//   atendimento: Atendimento[] | null
+  atendimento?: Atendimento[] | null;
+  paciente?: PacienteFormData[] | null;
 }
 
 // {/* LÓGICA PARA MODIFICAR AS COISAS (APENAS ADM) */}

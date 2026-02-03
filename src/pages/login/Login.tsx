@@ -13,16 +13,6 @@ function Login() {
         {} as UsuarioLogin
       );
 
-    // const [usuarioLogin, setUsuarioLogin] = useState<UsuarioLogin>({
-    //     id: 0,
-    //     nome: '',
-    //     email: '',
-    //     senha: '',
-    //     crm: '',
-    //     tipo: '',
-    //     token: ''
-    // }) 
-
     useEffect(() => {
         if (usuario.token !== "") {
                     navigate('/dashboard'); 

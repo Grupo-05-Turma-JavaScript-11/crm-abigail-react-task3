@@ -71,6 +71,7 @@ function Cadastro() {
         setConfirmarSenha("");
     }
     setIsLoading(false);
+    retornar()
 }
 
   // Validação: Verifica se todos os campos obrigatórios estão preenchidos corretamente

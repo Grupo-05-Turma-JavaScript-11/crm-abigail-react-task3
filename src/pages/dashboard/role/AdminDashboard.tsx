@@ -28,10 +28,10 @@ function formatTimeBR(date: Date | null): string {
 
 function mapStatus(raw: any): AgendaItem["status"] {
     const s = String(raw ?? "").trim().toLowerCase();
-    if (s.includes("AGENDADO")) return "Agendado";
-    if (s.includes("EM ATENDIMENTO")) return "Em Atendimento";
-    if (s.includes("CANCELADO")) return "Cancelado";
-    return "Agendado";
+    if (s.includes("agen")) return "AGENDADO";
+    if (s.includes("aten")) return "EM TRATAMENTO";
+    if (s.includes("final")) return "FINALIZADO";
+    return "CANCELADO";
 }
 
 function isToday(date: Date | null): boolean {
@@ -129,7 +129,7 @@ export default function AdminDashboard() {
 
             <StatsSection statCards={statCards} />
 
-            <section className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
+            <section className="px-4 py-6 sm:px-6 lg:px-8 mt-6  grid grid-cols-1 gap-4 xl:grid-cols-3">
                 <AgendaCard agenda={agenda} periodoAtivo={periodoAtivo} setPeriodoAtivo={setPeriodoAtivo} />
                 <ActivitiesCard activities={activities} />
             </section>

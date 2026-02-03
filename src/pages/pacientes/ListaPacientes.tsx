@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserPlus, Pencil, Trash2, Users, Search } from "lucide-react"; // Ícones CRM
-import { buscar, deletar } from "../../services/Service";
-import type { PacienteFormData } from "../../models/Paciente";
 import { AuthContext } from "../../contexts/AuthContext";
+import type { PacienteFormData } from "../../models/Paciente";
+import { buscar, deletar } from "../../services/Service";
+
 
 const ListaPacientes = () => {
   const [pacientes, setPacientes] = useState<PacienteFormData[]>([]);
@@ -43,11 +44,11 @@ const ListaPacientes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#134e4a] to-[#2D7A78] p-4 md:p-8">
-      <div className="max-w-6xl mx-auto bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden">
+    <div className=" min-h-screen w-full bg-gradient-to-br from-[#0f172a] via-[#134e4a] to-[#2D7A78] p-4 md:p-8 overflow-hidden">
+      <div className="max-w-6xl mx-auto bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl ">
         
         {/* Cabeçalho da Listagem */}
-        <div className="p-6 border-b bg-white flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="p-6 border-b rounded-md bg-white flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
               <Users className="text-[#2D7A78]" />
@@ -57,7 +58,7 @@ const ListaPacientes = () => {
           </div>
           
           <Link
-            to="/pacientes/novo"
+            to="/dashboard/pacientes/novo"
             className="flex items-center gap-2 bg-[#2D7A78] hover:bg-[#246361] text-white px-6 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-teal-900/20 active:scale-95"
           >
             <UserPlus size={20} />
@@ -96,7 +97,7 @@ const ListaPacientes = () => {
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-3">
                         <Link
-                          to={`/pacientes/${paciente.id}`}
+                          to={`/dashboard/pacientes/${paciente.id}`}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors shadow-sm border border-transparent hover:border-blue-100"
                           title="Editar Paciente"
                         >
@@ -125,7 +126,7 @@ const ListaPacientes = () => {
         </div>
 
         {/* Rodapé da Tabela */}
-        <div className="p-4 bg-gray-50 border-t text-sm text-gray-500 text-center">
+        <div className=" rounded-md p-4 bg-gray-50 border-t text-sm text-gray-500 text-center">
           Total de {pacientes.length} pacientes listados
         </div>
       </div>

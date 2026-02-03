@@ -4,9 +4,6 @@ import { AuthContext } from "../../contexts/AuthContext";
 import AdminDashboard from "./role/AdminDashboard";
 import MedicoDashboard from "./role/MedicoDashboard";
 import AssistenteDashboard from "./role/AssistenteDashboard";
-import Topbar from "./components/Topbar";
-import Sidebar from "./components/Sidebar";
-import DashboardLayout from "./DashboardLayout";
 
 export default function DashboardHome() {
     const { usuario } = useContext(AuthContext);
@@ -23,8 +20,7 @@ export default function DashboardHome() {
 
     return (
         <>
-            {usuario.tipo === "ADMIN" && 
-            <AdminDashboard />}
+            {usuario.tipo === "ADMIN" && <AdminDashboard />}
             {usuario.tipo === "MEDICO" && <MedicoDashboard />}
             {usuario.tipo === "ASSISTENTE" && <AssistenteDashboard />}
         </>

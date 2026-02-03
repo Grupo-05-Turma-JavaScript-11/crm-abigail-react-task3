@@ -96,7 +96,7 @@ export default function AgendaCard({ agenda, periodoAtivo, setPeriodoAtivo }: Pr
                                 style={{
                                     borderColor: "#01234024",
                                     backgroundColor: "white",
-                                    color: item.status === "Em Atendimento" ? COLORS.mid : COLORS.base,
+                                    color: item.status === "EM TRATAMENTO" ? COLORS.mid : COLORS.base,
                                 }}
                                 aria-label={`Ação para ${item.patient}`}
                             >

@@ -6,7 +6,7 @@ type Kpi = { key: string; label: string; value: string; bar: number; color: stri
 
 export default function BottomSection({ shortcuts, kpis }: { shortcuts: Shortcut[]; kpis: Kpi[] }) {
     return (
-        <section className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <section className="px-4 py-6 sm:px-6 lg:px-8 mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
             <div className="rounded-2xl border bg-white p-4 shadow-sm" style={{ borderColor: "#0123401a" }}>
                 <h3 className="text-sm font-bold" style={{ color: COLORS.base }}>
                     Atalhos rápidos

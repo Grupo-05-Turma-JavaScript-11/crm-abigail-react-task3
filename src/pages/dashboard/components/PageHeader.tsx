@@ -11,7 +11,7 @@ export default function PageHeader({ onNew }: Props) {
     const navigate = useNavigate();
 
     return (
-        <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className=" px-4 py-6 sm:px-6 lg:px-8 mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
                 <h1 className="text-xl font-bold" style={{ color: COLORS.base }}>
                     Dashboard
@@ -23,7 +23,7 @@ export default function PageHeader({ onNew }: Props) {
 
             <button
                 type="button"
-                onClick={() => navigate("/atendimentos")}
+                onClick={() => navigate("/dashboard/atendimentos")}
                 className="inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold shadow-sm transition 
                     hover:shadow-md focus:outline-none focus:ring-2 cursor-pointer"
                 style={{ backgroundColor: COLORS.mid, color: "white" }}
