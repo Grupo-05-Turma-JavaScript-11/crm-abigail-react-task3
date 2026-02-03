@@ -26,10 +26,10 @@ function formatTimeBR(date: Date | null): string {
 
 function mapStatus(raw: any): AgendaItem["status"] {
     const s = String(raw ?? "").trim().toLowerCase();
-    if (s.includes("confirm")) return "Confirmado";
-    if (s.includes("atend")) return "Em Atendimento";
-    if (s.includes("cancel")) return "Cancelado";
-    return "Agendado";
+    if (s.includes("agen")) return "AGENDADO";
+    if (s.includes("trat")) return "EM TRATAMENTO";
+    if (s.includes("final")) return "FINALIZADO";
+    return "CANCELADO";
 }
 
 function isToday(date: Date | null): boolean {
