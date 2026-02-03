@@ -14,6 +14,9 @@ import Atendimentos from "./pages/dashboard/atendimento/atendimento";
 import Navbar from "./components/navbar/Navbar";
 import Dashboard from "./pages/dashboard/Dashboard";
 import AtendimentoForm from "./components/atendimentos/formAtendimentos/AtendimentoForm";
+import ListaPacientes from "./components/pacientes/ListaPacientes";
+import NovoPaciente from "./components/pacientes/NovoPaciente";
+import EditarPaciente from "./components/pacientes/EditarPaciente";
 
 // Componente para proteger rotas
 interface ProtectedRouteProps {
@@ -50,9 +53,12 @@ export default function App() {
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/funcionalidades" element={<Feature />} />
 
-          <Route path="/atendimento" element={<Atendimentos />} />
+          <Route path="/atendimentos" element={<Atendimentos />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/atendimentoForm" element={<AtendimentoForm />} />
+          <Route path="/pacientes/novo" element={<NovoPaciente />} />
+          <Route path="/pacientes" element={<ListaPacientes />} />
+          <Route path="/pacientes/:id" element={<EditarPaciente />} />
 
           {/* 
             --- ROTAS EXCLUSIVAS: ASSISTENTE E ADMIN ---

@@ -1,4 +1,5 @@
-import type Paciente from "./Paciente";
+
+import type { PacienteFormData } from "./Paciente";
 import type { Usuario } from "./Usuario";
 
 
@@ -6,10 +7,10 @@ export default interface Atendimento {
     id: number;
     dataHora: string;
     motivo: string;
-    status: 'Agendado' | 'Em Tratamento' | 'Finalizado' | 'Cancelado';
-    formaPagamento: 'Particular' | 'Convênio';
+    status: 'AGENDADO' | 'EM TRATAMENTO' | 'FINALIZADO' | 'CANCELADO';
+    formaPagamento: 'PARTICULAR' | 'CONVENIO';
     observacao?: string;
     foto ?: string;
-    paciente?: Paciente | null;
-    medico?: Usuario | null;
+    paciente?: PacienteFormData | null;
+    usuario?: Usuario | null;
   }
