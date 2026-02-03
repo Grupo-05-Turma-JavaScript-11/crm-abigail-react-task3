@@ -57,7 +57,7 @@ export default function Topbar({ sidebarOpen, onToggleSidebar, userName, roleLab
                 <div className="flex items-center gap-3">
                     <button
                         type="button"
-                        onClick={() => navigate("/notificacoes")}
+                        onClick={() => navigate("/dashboard/notificacoes")}
                         className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border bg-white transition hover:shadow-sm 
                focus:outline-none focus:ring-2 cursor-pointer"
                         style={{ borderColor: "#01234026", color: COLORS.base }}

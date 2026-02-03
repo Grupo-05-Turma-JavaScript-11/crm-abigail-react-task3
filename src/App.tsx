@@ -9,7 +9,7 @@ import Sobre from "./pages/sobre/Sobre";
 import Login from "./pages/login/Login";
 import Cadastro from "./pages/cadastro/Cadastro";
 
-import Dashboard from "./pages/dashboard/Dashboard";
+import DashboardHome from "./pages/dashboard/DashboardHome";
 import DashboardLayout from "./pages/dashboard/DashboardLayout";
 
 import { AuthProvider, AuthContext } from "./contexts/AuthContext";
@@ -31,15 +31,28 @@ interface ProtectedRouteProps {
     allowedRoles?: string[];
 }
 
+type PropsPrivateRoute = {
+  children: ReactNode;
+};
+
 function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
     const { usuario } = useContext(AuthContext);
 
-    if (!usuario?.token) return <Navigate to="/login" replace />;
-
-    if (allowedRoles && !allowedRoles.includes(usuario.tipo)) {
-        return <Navigate to="/" replace />;
+    if (!usuario || (allowedRoles && !allowedRoles.includes(usuario.tipo))) {
+        return <Navigate to="/dashboard" replace />;
     }
+
     return <>{children}</>;
+}
+
+function PrivateRoute({ children }: PropsPrivateRoute) {
+  const { usuario } = useContext(AuthContext);
+
+  if (!usuario || !usuario.token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 }
 
 export default function App() {
@@ -57,38 +70,64 @@ export default function App() {
 
                     {/* ROTAS INTERNAS (DASHBOARD) */}
                     <Route
+                        path="/dashboard"
                         element={
-                            <ProtectedRoute allowedRoles={["admin", "medico", "assistente"]}>
+                            <PrivateRoute>
                                 <DashboardLayout />
-                            </ProtectedRoute>
+                            </PrivateRoute>
                         }
                     >
-                        {/* Ajuste os paths conforme suas rotas reais */}
-                        <Route path="/dashboard-admin" element={<Dashboard />} />
-                        <Route path="/agenda-medica" element={
-                            <div className="min-h-screen bg-slate-50 p-6">
-                                Agenda (placeholder)
-                            </div>}
+                        {/* /dashboard */}
+                        <Route index element={<DashboardHome />} />
+
+                        {/* Agenda: admin, medico, assistente */}
+                        <Route
+                            path="agenda-medica"
+                            element={
+                                <ProtectedRoute allowedRoles={["admin", "medico", "assistente"]}>
+                                    <div className="min-h-screen bg-slate-50 p-6">Agenda (placeholder)</div>
+                                </ProtectedRoute>
+                            }
                         />
-                        <Route path="/recepcao" element={
-                            <div className="min-h-screen bg-slate-50 p-6">
-                                Recepção (placeholder)
-                            </div>}
+
+                        {/* Recepção: admin, assistente */}
+                        <Route
+                            path="recepcao"
+                            element={
+                                <ProtectedRoute allowedRoles={["admin", "assistente"]}>
+                                    <div className="min-h-screen bg-slate-50 p-6">Recepção (placeholder)</div>
+                                </ProtectedRoute>
+                            }
                         />
-                        <Route path="/configuracoes" element={
-                            <div className="min-h-screen bg-slate-50 p-6">
-                                Configurações (placeholder)
-                            </div>}
+
+                        {/* Configurações: admin apenas */}
+                        <Route
+                            path="configuracoes"
+                            element={
+                                <ProtectedRoute allowedRoles={["admin"]}>
+                                    <div className="min-h-screen bg-slate-50 p-6">Configurações (placeholder)</div>
+                                </ProtectedRoute>
+                            }
                         />
-                        <Route path="/notificacoes" element={
-                            <div className="min-h-screen bg-slate-50 p-6">
-                                Notificações (placeholder)
-                            </div>}
+
+                        {/* Notificações: todos logados */}
+                        <Route
+                            path="notificacoes"
+                            element={
+                                <ProtectedRoute allowedRoles={["admin", "medico", "assistente"]}>
+                                    <div className="min-h-screen bg-slate-50 p-6">Notificações (placeholder)</div>
+                                </ProtectedRoute>
+                            }
                         />
-                        <Route path="/atendimentos/novo" element={
-                            <div className="min-h-screen bg-slate-50 p-6">
-                                Novo atendimento (placeholder)
-                            </div>}
+
+                        {/* Novo atendimento: admin, medico e assistente) */}
+                        <Route
+                            path="atendimentos/novo"
+                            element={
+                                <ProtectedRoute allowedRoles={["admin", "medico", "assistente"]}>
+                                    <div className="min-h-screen bg-slate-50 p-6">Novo atendimento (placeholder)</div>
+                                </ProtectedRoute>
+                            }
                         />
                     </Route>
 
@@ -99,4 +138,5 @@ export default function App() {
         </AuthProvider>
     );
 }
+
 

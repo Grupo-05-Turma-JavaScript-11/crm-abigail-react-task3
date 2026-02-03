@@ -8,12 +8,12 @@ export const toneStyles = {
     warning: { bg: "#45c4b01a", dot: COLORS.mid, fg: COLORS.base },
 } as const;
 
-export function getNavItems(): NavItem[] {
-    return [
+export function getNavItems(tipo?: string): NavItem[] {
+    const items: NavItem[] = [
         {
             key: "dashboard",
             label: "Dashboard",
-            to: "/", // manter coerente com a rota atual pós-login (admin)
+            to: "/dashboard",
             icon: (
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M4 4h7v7H4z" />
@@ -26,7 +26,7 @@ export function getNavItems(): NavItem[] {
         {
             key: "agenda",
             label: "Agenda",
-            to: "/agenda-medica",
+            to: "/dashboard/agenda-medica",
             icon: (
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M7 3v3M17 3v3" />
@@ -38,7 +38,7 @@ export function getNavItems(): NavItem[] {
         {
             key: "recepcao",
             label: "Recepção",
-            to: "/recepcao",
+            to: "/dashboard/recepcao",
             icon: (
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M3 21h18" />
@@ -49,9 +49,9 @@ export function getNavItems(): NavItem[] {
             ),
         },
         {
-            key: "config",
+            key: "configuracoes",
             label: "Configurações",
-            to: "/dashboard-admin/config",
+            to: "/dashboard/configuracoes",
             icon: (
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
@@ -60,6 +60,20 @@ export function getNavItems(): NavItem[] {
             ),
         },
     ];
+
+    // Filtragem por perfil
+    if (tipo === "admin") return items;     // vê e entra em tudo
+
+    if (tipo === "medico") {    // acessa dashboard, agenda própria e notificações
+        return items.filter(i => i.key !== "recepcao" && i.key !== "configuracoes");
+    }
+
+    if (tipo === "assistente") {    // vê agenda, recepção e atribuições administrativas de recepção
+        return items.filter(i => i.key !== "configuracoes");
+    }
+
+
+    return items;
 }
 
 export function getStatCards(): StatCard[] {

@@ -9,18 +9,18 @@ import { getNavItems } from "./dashboard.data";
 
 export default function DashboardLayout() {
     const { usuario, handleLogout } = useContext(AuthContext);
-
+    
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const sidebarRef = useRef<HTMLElement | null>(null);
     const navigate = useNavigate();
     const location = useLocation();
 
-    const navItems = useMemo(() => getNavItems(), []);
+    const navItems = useMemo(() => getNavItems(usuario.tipo), [usuario.tipo]);
 
     const activeKey = useMemo(() => {
         const found = navItems.find(item => item.to === location.pathname);
-        return found?.key ?? "";
+        return found?.key ?? "dashboard";
     }, [location.pathname, navItems]);
 
     const roleLabel = useMemo(() => {
