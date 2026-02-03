@@ -1,82 +1,94 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Sobre from "./pages/sobre/Sobre";
-import Feature from "./pages/funcionalidades/Feature";
-import Home from "./pages/home/Home";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+
+import { useContext, type ReactNode } from "react";
+
+// Componentes globais (site público)
+import Navbar from "./components/navbar/Navbar";
 import Footer from "./components/footer/Footer";
+
+// Páginas públicas
+import Home from "./pages/home/Home";
+import Sobre from "./pages/sobre/Sobre";
 import Login from "./pages/login/Login";
 import Cadastro from "./pages/cadastro/Cadastro";
-import { AuthProvider } from "./contexts/AuthContext";
 
-import { Navigate } from "react-router-dom";
-import { useContext, type ReactNode } from "react";
-import { AuthContext } from "./contexts/AuthContext";
-import Atendimentos from "./pages/dashboard/atendimento/atendimento";
-import Navbar from "./components/navbar/Navbar";
+// Dashboard (layout próprio)
 import Dashboard from "./pages/dashboard/Dashboard";
-import AtendimentoForm from "./components/atendimentos/formAtendimentos/AtendimentoForm";
-import ListaPacientes from "./components/pacientes/ListaPacientes";
-import NovoPaciente from "./components/pacientes/NovoPaciente";
-import EditarPaciente from "./components/pacientes/EditarPaciente";
 
-// Componente para proteger rotas
+// Contexto de autenticação
+import { AuthProvider, AuthContext } from "./contexts/AuthContext";
+
+// Proteção de rotas e Tipagem das Props
 interface ProtectedRouteProps {
-  children: ReactNode;
-  allowedRoles?: string[]; // Tipos permitidos (ex: ['admin', 'medico'])
+    children: ReactNode;        // componente protegido
+    allowedRoles?: string[];    // tipos de usuário permitidos
 }
 
+// Componente que protege rotas
 function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
-  const { usuario } = useContext(AuthContext);
 
-  // Sem token? Vá pro login!
-  if (usuario.token === "") {
-    return <Navigate to="/login" />;
-  }
+    // Usuário logado vem do AuthContext
+    const { usuario } = useContext(AuthContext);
 
-  // Se a rota é restrita a certos tipos e o usuário não é um deles
-  if (allowedRoles && !allowedRoles.includes(usuario.tipo)) {
-    return <Navigate to="/" />;
-  }
+    // Se NÃO tem token → manda para login
+    if (usuario.token === "") {
+        return <Navigate to="/login" replace />;    // Replace evita que o usuário volte para uma página protegida sem login
+    }
 
-  return <>{children}</>;
+    // Se a rota exige papel específico e o usuário não tem
+    if (allowedRoles && !allowedRoles.includes(usuario.tipo)) {
+        return <Navigate to="/" replace />;
+    }
+
+    // Se passou nas validações, renderiza o conteúdo
+    return <>{children}</>;
 }
 
-export default function App() {
-  return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Navbar />
-        <Routes>
-          {/* --- PÚBLICAS --- */}
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/cadastrar" element={<Cadastro />} />
-          <Route path="/sobre" element={<Sobre />} />
-          <Route path="/funcionalidades" element={<Feature />} />
 
-          <Route path="/atendimentos" element={<Atendimentos />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/atendimentoForm" element={<AtendimentoForm />} />
-          <Route path="/pacientes/novo" element={<NovoPaciente />} />
-          <Route path="/pacientes" element={<ListaPacientes />} />
-          <Route path="/pacientes/:id" element={<EditarPaciente />} />
+// AppContent decide quando mostrar Navbar e Footer
+function AppContent() {
 
-          {/* 
-            --- ROTAS EXCLUSIVAS: ASSISTENTE E ADMIN ---
-            <Route path="/agendamentos" element={
-              <ProtectedRoute allowedRoles={['assistente', 'admin']}>
-                <Agendamentos /> {/* Gerenciamento de agenda, por exemplo 
-              </ProtectedRoute>
-            } />
+    // Hook para saber a rota atual
+    const location = useLocation();
 
-            {/* --- ROTAS EXCLUSIVAS: APENAS ADMIN ---
-            <Route path="/painel-controle" element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <PainelAdmin />
-              </ProtectedRoute>
-            } /> */}
-        </Routes>
-        <Footer />
-      </BrowserRouter>
-    </AuthProvider>
-  );
+    // Verifica se a rota atual pertence à área interna (dashboard); se começar com "/dashboard", oculta Navbar e Footer
+    const isInternalRoute =
+        location.pathname.startsWith("/dashboard")
+
+    return (
+        <>
+            {/* Navbar só aparece no site público */}
+            {!isInternalRoute && <Navbar />}
+
+            {/* Definição das rotas */}
+            <Routes>
+
+                {/* ROTAS PÚBLICAS */}
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/cadastro" element={<Cadastro />} />
+                <Route path="/sobre" element={<Sobre />} />
+                
+
+                {/* ROTAS PROTEGIDAS (exemplo) */}
+
+                {/* Dashboard Admin */}
+                <Route
+                    path="/dashboard"
+                    element={
+                            <Dashboard />
+                    }
+                />
+
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+
+            </Routes>
+
+            {/* Footer só aparece no site público */}
+            {!isInternalRoute && <Footer />}
+        </>
+    );
 }
+
+

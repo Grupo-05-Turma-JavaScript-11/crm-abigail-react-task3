@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { Search, Plus } from "lucide-react";
-import AtendimentoCard from "../../../components/atendimentos/cardAtendimentos/AtendimentoCard";
-import type Atendimento from "../../../models/Atendimento";
-import AtendimentoForm from "../../../components/atendimentos/formAtendimentos/AtendimentoForm";
-import { api, atualizar, buscar, deletar } from "../../../services/Service";
-import { AuthContext } from "../../../contexts/AuthContext";
+import AtendimentoCard from "../../components/atendimentos/cardAtendimentos/AtendimentoCard";
+import type Atendimento from "../../models/Atendimento";
+import AtendimentoForm from "../../components/atendimentos/formAtendimentos/AtendimentoForm";
+import { api, atualizar, buscar, deletar } from "../../services/Service";
+import { AuthContext } from "../../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { set } from "react-hook-form";
 
@@ -113,7 +113,8 @@ const Atendimentos = () => {
                   buscarAtendimentos();
                 }}
                 className={` px-6 py-2.5 rounded-xl font-medium transition-all duration-300 cursor-pointer border
-                  ${ modo === "todos"
+                  ${
+                    modo === "todos"
                       ? "bg-[#E6F4F1] text-[#025959] border-[#025959] shadow-sm"
                       : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                   } `}
@@ -127,7 +128,8 @@ const Atendimentos = () => {
                   filtrarMeusAtendimentos();
                 }}
                 className={`px-6 py-2.5 rounded-xl font-medium transition-all duration-300 cursor-pointer border
-                  ${modo === "meus"
+                  ${
+                    modo === "meus"
                       ? "bg-[#EDF7ED] text-[#027333] border-[#027333] shadow-sm"
                       : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                   }`}
