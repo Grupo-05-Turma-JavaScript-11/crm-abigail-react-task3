@@ -1,73 +1,158 @@
-# React + TypeScript + Vite
+# 🏥 CRM – Gerenciamento de Pacientes e Atendimentos
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este projeto é um **CRM em formato MVP**, desenvolvido para gerenciar pacientes e atendimentos de forma simples, organizada e eficiente.
 
-Currently, two official plugins are available:
+A aplicação possui uma área pública institucional e uma área privada com funcionalidades completas de gestão, integrando front-end e back-end por meio de uma API REST.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🚀 Tecnologias Utilizadas
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Front-end
+- React  
+- TypeScript  
+- Tailwind CSS  
+- React Router  
+- Axios  
+- React Toastify  
+- Lucide React  
 
-## Expanding the ESLint configuration
+### Back-end
+- Node.js  
+- NestJS  
+- API REST  
+- Autenticação JWT  
+- Banco de Dados relacional  
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🌐 Funcionalidades
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Área Pública
+- Landing page com:
+  - Home  
+  - Sobre  
+  - Funcionalidades  
+- Navbar com navegação  
+- Acesso a Login e Cadastro  
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Área Privada (após autenticação)
+
+Após realizar login, o usuário tem acesso a:
+
+#### Dashboard
+- Visão geral do sistema  
+- Informações resumidas e atalhos  
+
+#### Módulo de Pacientes
+- Cadastro de pacientes  
+- Edição de dados  
+- Exclusão  
+- Listagem completa  
+
+#### Módulo de Atendimentos
+- Criação de atendimentos  
+- Alteração de status  
+- Edição  
+- Exclusão  
+- Exibição em cards interativos  
+
+---
+
+## 🔐 Autenticação
+
+- Sistema de login e cadastro de usuários  
+- Controle de acesso com JWT  
+- Rotas protegidas no front-end e back-end  
+
+---
+
+## 🧩 Arquitetura do Projeto
+
+O projeto foi desenvolvido seguindo boas práticas de organização:
+
+- Estrutura modularizada  
+- Separação de responsabilidades  
+- Padrão MVC no front-end  
+- Componentização reutilizável  
+- Integração com API REST  
+
+---
+
+## 📦 Como Executar o Projeto
+
+### Front-end
+
+```bash
+# Clone o repositório
+git clone <url-do-repositorio>
+
+# Entre na pasta do projeto
+cd frontend
+
+# Instale as dependências
+npm install
+
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Inicie o projeto
 ```
+npm run dev
+```
+
+---
+
+## 📌 Características do MVP
+
+- Interface moderna e responsiva
+- CRUD completo
+- Comunicação real com backend
+- Estrutura escalável
+- Base pronta para novas funcionalidades
+
+---
+
+## 🔮 Melhorias Futuras
+
+- Relatórios e métricas
+- Controle de permissões
+- Upload de arquivos
+- Integração com agenda
+- Notificações avançadas
+
+---
+
+## 📄 Licença
+
+Este projeto foi desenvolvido para fins educacionais.
+
+---
+
+## 👨‍💻 Autores
+
+Projeto desenvolvido como estudo prático de desenvolvimento fullstack, com foco em React, TypeScript e NestJS.
+
+### Adryan Lopes
+[Linkedin](https://www.linkedin.com/in/adryanlopes/)
+[GitHub](https://github.com/adryanlops)
+
+### Bruna Barbieri
+[LinkedIn](https://www.linkedin.com/in/barbieribbruna/)
+[GitHub](https://github.com/barbieribbruna)
+
+### Gabriela Patrocínio
+[LinkedIn](https://www.linkedin.com/in/gabriela-patrocínio/)
+[GitHub](https://github.com/orgs/Grupo-05-Turma-JavaScript-11/people/BihPatrocinio)
+
+### Anderson Silva
+[LinkedIn](https://www.linkedin.com/in/anderson-asilva/)
+[GitHub](https://github.com/halozer01)
+
+### Isadora Lopes
+[LinkedIn](https://www.linkedin.com/in/isadora-l/)
+[GitHub](https://github.com/Isadora-Lopes-Santos)
+
+### Licóli Santos
+[LinkedIn](https://www.linkedin.com/in/licoli-santos/)
+[GitHub](https://github.com/licolisantos)
