@@ -1,4 +1,4 @@
-import React from "react";
+
 import { HelpFeatureCard } from "./HelpFeatureCard";
 
 export function HowItHelps() {

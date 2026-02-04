@@ -1,4 +1,4 @@
-import React from "react";
+
 import { Title } from "../titleAbout/Title";
 import { HeroBenefits } from "./HeroBenefits";
 

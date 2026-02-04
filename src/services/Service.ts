@@ -1,7 +1,8 @@
 import axios from "axios";
+import process from "process";
 
 export const api = axios.create({
-    baseURL: "https://crm-backend-e4sa.onrender.com"
+    baseURL: "https://crm-backend-e4sa.onrender.com",
 })
 
 export const cadastrarUsuario = async (url: string, dados: Object, setDados: Function) => {

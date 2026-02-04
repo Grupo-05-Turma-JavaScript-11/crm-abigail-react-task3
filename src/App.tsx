@@ -10,20 +10,20 @@ import { useContext, type ReactNode } from "react";
 import Navbar from "./components/navbar/Navbar";
 import Footer from "./components/footer/Footer";
 
-import Home from "./pages/home/Home";
-import Sobre from "./pages/sobre/Sobre";
-import Login from "./pages/login/Login";
-import Cadastro from "./pages/cadastro/Cadastro";
+import Home from "./pages/landing/home/Home";
+import Sobre from "./pages/landing/sobre/Sobre";
+import Login from "./pages/auth/login/Login";
+import Cadastro from "./pages/auth/cadastro/Cadastro";
 
-import DashboardHome from "./pages/dashboard/DashboardHome";
-import DashboardLayout from "./pages/dashboard/DashboardLayout";
+import DashboardHome from "./pages/admin/dashboard/DashboardHome";
+import DashboardLayout from "./pages/admin/dashboard/DashboardLayout";
 
 import { AuthProvider, AuthContext } from "./contexts/AuthContext";
-import Atendimentos from "./pages/atendimento/atendimento";
-import ListaPacientes from "./pages/pacientes/ListaPacientes";
-import NovoPaciente from "./pages/pacientes/NovoPaciente";
-import EditarPaciente from "./pages/pacientes/EditarPaciente";
-import Feature from "./pages/funcionalidades/Feature";
+import Atendimentos from "./pages/admin/atendimento/atendimento";
+import ListaPacientes from "./pages/admin/pacientes/ListaPacientes";
+import NovoPaciente from "./pages/admin/pacientes/NovoPaciente";
+import EditarPaciente from "./pages/admin/pacientes/EditarPaciente";
+import Feature from "./pages/landing/funcionalidades/Feature";
 import { ToastAlerta } from "./utils/ToastAlerta";
 import { ToastContainer } from "react-toastify";
 

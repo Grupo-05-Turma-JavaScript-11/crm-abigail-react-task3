@@ -1,4 +1,4 @@
-import React from "react";
+
 import { team } from "../../../../constants/team";
 import { TeamCard } from "./TeamCard";
 

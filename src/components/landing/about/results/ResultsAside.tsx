@@ -1,4 +1,4 @@
-import React from "react";
+
 import { ResultMetricCard } from "./ResultMetricCard";
 
 export function ResultsAside() {

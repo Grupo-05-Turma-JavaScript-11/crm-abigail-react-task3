@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { UserCircle, ChevronDown, ChevronUp } from "lucide-react";
 import type Atendimento from "../../../../models/Atendimento";
-import { useNavigate } from "react-router-dom";
 import AtendimentoForm from "../formAtendimentos/AtendimentoForm";
 
 interface AtendimentoCardProps {
